@@ -1,0 +1,104 @@
+package com.blacksoil.droidsynergy.utils;
+
+import java.util.LinkedList;
+import java.util.List;
+
+
+// This class does conversion 
+// necessary for a packet to be transmitted throughout network
+// Big-endian ordering is used for integer
+public class Converter {
+
+	// Add the given string to a list of byte
+	public static void appendString(List<Byte> dest, String src) {
+		if (dest == null || src == null) {
+			throw new IllegalArgumentException("dest/src can't be null!");
+		}
+		for (int i = 0; i < src.length(); i++) {
+			dest.add((byte) src.charAt(i));
+		}
+	}
+	
+	// Given a list of byte that doesn't its data length
+	// this methods add the length, which is
+	// the number of byte in the list inserted to the begnning
+	// as a 4-byte values in a big-endian ordering
+	public static void insertSize(List<Byte> dest){
+		int size = dest.size();
+		byte[] size_converted = convertInt32ToNetwork(size);
+		for(int i=(size_converted.length - 1);i>=0;i--){
+			dest.add(0, size_converted[i]);
+		}
+	}
+
+	// Add integer to the beginning (4 byte)
+	public static void insertInt32(List<Byte> dest, int src) {
+		if (dest == null)
+			throw new IllegalArgumentException("dest can't be null");
+		byte[] src_converted = convertInt32ToNetwork(src);
+		for (int i = 0; i < src_converted.length; i++) {
+			dest.add(src_converted[i]);
+		}
+	}
+
+	// Add integer to the beginning (2 byte)
+	public static void insertInt16(List<Byte> dest, int src) {
+		if (dest == null)
+			throw new IllegalArgumentException("dest can't be null");
+		byte[] src_converted = convertInt16ToNetwork(src);
+		for (int i = 0; i < src_converted.length; i++) {
+			dest.add(src_converted[i]);
+		}
+	}
+
+	//
+	public static void appendInt16(List<Byte> dest, int src) {
+		if (dest == null)
+			throw new IllegalArgumentException("dest can't be null");
+	}
+
+	public static byte[] convertInt16ToNetwork(int src) {
+		byte[] result = new byte[2];
+		result[0] = (byte) (src >> 8);
+		result[1] = (byte) src;
+		return result;
+	}
+
+	public static byte[] convertInt32ToNetwork(int src) {
+		byte[] result = new byte[4];
+		result[0] = (byte) (src >> 24);
+		result[1] = (byte) (src >> 16);
+		result[2] = (byte) (src >> 8);
+		result[3] = (byte) src;
+		return result;
+	}
+	
+
+	// Parse the length of the received Synergy packet
+	// The length is big-endian formatted as it is
+	// using network representation
+	public static int getPacketLength(List<Byte> packet){
+		if(packet == null)
+			throw new IllegalArgumentException("packet can't be null!");
+		
+		if(packet.size() < 4)
+			throw new IllegalArgumentException("packet size less than 4");
+		int packet_size = 0;
+		packet_size += (packet.get(0) << 24);
+		packet_size += (packet.get(1) << 16);
+		packet_size += (packet.get(2) << 8);
+		packet_size += packet.get(3);
+		return packet_size;
+	}
+	
+	public static int getPacketLength(byte[] packet){
+		if(packet.length < 4)
+			throw new IllegalArgumentException("packet size less than 4");
+		
+		List<Byte> packet_list = new LinkedList<Byte>();
+		for(int i = 0 ; i < packet.length ; i++){
+			packet_list.add(packet[i]);
+		}
+		return getPacketLength(packet_list);
+	}
+}
