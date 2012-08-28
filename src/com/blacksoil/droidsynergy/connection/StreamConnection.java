@@ -7,12 +7,10 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 
 import com.blacksoil.droidsynergy.packet.Packet;
 import com.blacksoil.droidsynergy.parser.Parser;
-import com.blacksoil.droidsynergy.parser.SimpleParser;
 import com.blacksoil.droidsynergy.response.Response;
 import com.blacksoil.droidsynergy.utils.Converter;
 
@@ -51,7 +49,7 @@ public class StreamConnection implements Connection {
 	 * Parser class
 	 */
 	public StreamConnection(String host, int port, Queue<Packet> queue,
-			ConnectionCallback callback, Map<String, Packet> stringToPacketMap)
+			ConnectionCallback callback, Parser parser)
 			throws UnknownHostException, IOException {
 		mSocket = new Socket(host, port);
 		// Get input output stream
@@ -62,14 +60,14 @@ public class StreamConnection implements Connection {
 		// Initializes the global buffer
 		mByteBuffer = new LinkedList<Byte>();
 		// Initializes the parser
-		mParser = new SimpleParser(stringToPacketMap);
+		mParser = parser;
 		// Notify client
 		mCallback.connected();
-		beginConnection();
 	}
 
 	// The main body of this class
-	private void beginConnection() {
+	// Call this to start the main loop
+	public void beginConnection() {
 		final int BUFFER_SIZE = 512;
 		byte[] buffer = new byte[BUFFER_SIZE];
 		// Result of read()
@@ -108,6 +106,12 @@ public class StreamConnection implements Connection {
 					if (packlen > 1000) {
 						throw new RuntimeException("Read too big: " + packlen);
 					}
+					
+					// We don't have enough data to be processed
+					// Loop until we have enough
+					if(packlen > mByteBuffer.size()){
+						continue;
+					}
 
 					// +4 for the packetsize itself
 					for (int i = 0; i < (packlen + 4); i++) {
@@ -140,7 +144,6 @@ public class StreamConnection implements Connection {
 		mCallback.disconnected();
 	}
 
-	@Override
 	public Packet getNextPacket() {
 		synchronized (mPacketQueue) {
 			if (!mPacketQueue.isEmpty()) {
@@ -150,12 +153,10 @@ public class StreamConnection implements Connection {
 		}
 	}
 
-	@Override
 	public Queue<Packet> getPacketQueue() {
 		return mPacketQueue;
 	}
 
-	@Override
 	public boolean writeResponse(Response resp) {
 		List<Byte> responseBytes = resp.toByteArray();
 		if (responseBytes == null) {

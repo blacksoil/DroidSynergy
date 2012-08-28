@@ -16,7 +16,8 @@ public interface Connection {
 	public Queue<Packet> getPacketQueue();
 	// Write a response packet to the server
 	public boolean writeResponse(Response resp);
-	
+	// Begin looping the network connection
+	public void beginConnection();
 	/*
 	 * TODO:
 	 * + getConnectionState 

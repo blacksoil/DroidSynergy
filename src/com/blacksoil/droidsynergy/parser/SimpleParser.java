@@ -16,7 +16,6 @@ public class SimpleParser implements Parser {
 		mStringToPacketMap = stringToPacketMap;
 	}
 	
-	@Override
 	public Packet parse(List<Byte> packets) {
 		int packetLength;
 		
@@ -47,7 +46,7 @@ public class SimpleParser implements Parser {
 	
 	// Given a packets, return an appropriate packet
 	// that associates with the bytes.
-	// Return null if no packet applicable
+	// Return null if no packet applicable 
 	private Packet getAppropriatePacket(List<Byte> packets) {
 		for(String keyword: mStringToPacketMap.keySet()){
 			if(keyword.length() > packets.size())

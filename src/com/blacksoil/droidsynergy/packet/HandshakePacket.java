@@ -9,8 +9,8 @@ import com.blacksoil.droidsynergy.response.StringResponse;
 // Handshake packet which is the first
 // thing a new Synergy client-server connection does
 public class HandshakePacket extends Packet {
-	private String mType = "Synergy"; 
-	private String mDescription = "Synergy Handshake";
+	public static String mType = "Synergy"; 
+	public static String mDescription = "Synergy Handshake";
 	
 	@Override
 	public String getType() {
