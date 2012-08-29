@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import android.util.Log;
+
 import com.blacksoil.droidsynergy.packet.Packet;
 import com.blacksoil.droidsynergy.parser.Parser;
 import com.blacksoil.droidsynergy.response.Response;
@@ -164,7 +166,7 @@ public class StreamConnection implements Connection {
 		}
 		try {
 			for (int i = 0; i < responseBytes.size(); i++) {
-				mOut.write(responseBytes.remove(i));
+				mOut.write(responseBytes.remove(0));
 			}
 			mOut.flush();
 		} catch (IOException e) {
