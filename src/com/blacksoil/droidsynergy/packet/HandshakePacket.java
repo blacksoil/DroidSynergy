@@ -2,20 +2,44 @@ package com.blacksoil.droidsynergy.packet;
 
 import java.util.List;
 
+import com.blacksoil.droidsynergy.constant.DroidSynergyBuild;
+import com.blacksoil.droidsynergy.response.HandshakeResponse;
 import com.blacksoil.droidsynergy.response.Response;
-import com.blacksoil.droidsynergy.response.StringResponse;
 
-
-// Handshake packet which is the first
-// thing a new Synergy client-server connection does
+/*
+ * Handshake packet looks like this: "7Synergy"
+ * With 7 the packet length prefixing the packet body.
+ * 
+ * 
+ * The reply is as follow:
+ * Synergy%2i%2i%s
+ * 
+ * With:
+ * %2i = 32-bit int
+ * %s = String
+ * 
+ * The first %2i is really two 16-bit integers
+ * representing the Synergy Major and Minor
+ * (Big-endian byte ordering)
+ * 
+ * The second %2i is the length of %s
+ * 
+ * %s is the client name that the server is expecting
+ * 
+ */
 public class HandshakePacket extends Packet {
-	public static String mType = "Synergy"; 
+	public static String mType = "Synergy";
 	public static String mDescription = "Synergy Handshake";
-	
+
+	public class Argument {
+		public String client_name;
+	}
+
 	@Override
 	public String getType() {
 		return mType;
 	}
+
 	@Override
 	public String getDescription() {
 		return mDescription;
@@ -24,12 +48,18 @@ public class HandshakePacket extends Packet {
 	@Override
 	public Response generateResponse() {
 		// Simply reply with a packet that says "Synergy" to reply the handshake
-		StringResponse handshakeResponse = new StringResponse("Synergy");
+		Response handshakeResponse = new HandshakeResponse(DroidSynergyBuild.getInstance().getClientName());
 		return handshakeResponse;
 	}
+
 	@Override
 	public Packet getInstance(List<Byte> packets) {
 		return new HandshakePacket();
 	}
-	
+
+	@Override
+	public String toString() {
+		return mDescription;
+	}
+
 }

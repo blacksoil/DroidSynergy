@@ -19,4 +19,8 @@ public abstract class Packet {
 	// Get a new packet Object that initializes according
 	// to the given packets
 	public abstract Packet getInstance(List<Byte> packets);
+	
+	// String representation of the packet
+	// For debugging purposes
+	public abstract String toString();
 }
