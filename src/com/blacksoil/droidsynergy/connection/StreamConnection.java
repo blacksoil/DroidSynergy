@@ -94,7 +94,10 @@ public class StreamConnection implements Connection {
 						mCallback.problem("read() == -1");
 						mCallback.disconnected();
 					}
-
+					else{
+						mCallback.log("Got packet: " + readlen + " bytes.");
+					}
+					
 					// Copy the read() result in to the global buffer
 					for (int i = 0; i < readlen; i++) {
 						mByteBuffer.add(buffer[i]);
@@ -115,7 +118,7 @@ public class StreamConnection implements Connection {
 						continue;
 					}
 
-					// +4 for the packetsize itself
+					// +4 for the packet size itself
 					for (int i = 0; i < (packlen + 4); i++) {
 						// Move it to the Parser buffer while removing the
 						// original
@@ -164,8 +167,10 @@ public class StreamConnection implements Connection {
 		if (responseBytes == null) {
 			throw new IllegalArgumentException("resp shouldn't be null!");
 		}
+		
+		// mCallback.log("Sending response: " + responseBytes.size() + " bytes.");
 		try {
-			for (int i = 0; i < responseBytes.size(); i++) {
+			while(!responseBytes.isEmpty()){
 				mOut.write(responseBytes.remove(0));
 			}
 			mOut.flush();
@@ -174,6 +179,7 @@ public class StreamConnection implements Connection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		return true;
 	}
 

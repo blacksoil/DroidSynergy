@@ -3,6 +3,9 @@ package com.blacksoil.droidsynergy.parser;
 import java.util.List;
 import java.util.Map;
 
+import android.util.Printer;
+
+import com.blacksoil.droidsynergy.connection.ConnectionCallback;
 import com.blacksoil.droidsynergy.packet.Packet;
 import com.blacksoil.droidsynergy.utils.Converter;
 

@@ -91,7 +91,8 @@ public class MainActivity extends Activity implements ConnectionCallback, Printe
 					rcvPacket = mQueue.remove();
 					
 					// Do some logging
-					Logd("Packet received: " + rcvPacket.toString());
+					// Logd("Packet received: " + rcvPacket.toString());
+					
 					response = rcvPacket.generateResponse();
 					Utility.dump(response, mPrinter);
 					
@@ -163,6 +164,10 @@ public class MainActivity extends Activity implements ConnectionCallback, Printe
 	public void problem(String msg) {
 		Logd(msg);
 	}
+	
+	public void log(String msg){
+		Logd("LOG:" + msg);
+	}
 
 	// Log.d wrapper
 	public void Logd(String msg) {
@@ -174,6 +179,8 @@ public class MainActivity extends Activity implements ConnectionCallback, Printe
 		Log.e(TAG, msg);
 		System.exit(1);
 	}
+	
+	
 
 	// Invoked only for debugging purposes
 	public void println(String x) {
