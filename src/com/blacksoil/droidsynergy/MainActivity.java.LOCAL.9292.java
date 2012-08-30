@@ -179,6 +179,8 @@ public class MainActivity extends Activity implements ConnectionCallback, Printe
 		Log.e(TAG, msg);
 		System.exit(1);
 	}
+	
+	
 
 	// Invoked only for debugging purposes
 	public void println(String x) {

@@ -10,22 +10,18 @@ import java.util.Queue;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Printer;
 import android.view.Menu;
 
 import com.blacksoil.droidsynergy.connection.Connection;
 import com.blacksoil.droidsynergy.connection.ConnectionCallback;
 import com.blacksoil.droidsynergy.connection.StreamConnection;
-import com.blacksoil.droidsynergy.constant.DroidSynergyBuild;
 import com.blacksoil.droidsynergy.packet.HandshakePacket;
 import com.blacksoil.droidsynergy.packet.Packet;
 import com.blacksoil.droidsynergy.parser.Parser;
 import com.blacksoil.droidsynergy.parser.SimpleParser;
-import com.blacksoil.droidsynergy.response.Response;
-import com.blacksoil.droidsynergy.utils.Utility;
 
-public class MainActivity extends Activity implements ConnectionCallback, Printer {
-	private String mHost = "192.168.1.8";
+public class MainActivity extends Activity implements ConnectionCallback {
+	private String mHost = "127.0.0.1";
 	private int mPort = 24800;
 
 	// Thread that handles network connections
@@ -39,67 +35,34 @@ public class MainActivity extends Activity implements ConnectionCallback, Printe
 
 	// Network connection handler
 	private Connection mConnection;
-
+	
 	// Network byte parser
 	private Parser mParser;
-
+	
 	// Packet Queue used to interact with Connection
 	private Queue<Packet> mQueue;
-
-	// Callback for Connection
-	private ConnectionCallback mCallback;
 	
-	// Printer for logging purposes
-	private Printer mPrinter;
-
 	// Logging TAG
 	private static String TAG = "DroidSynergy";
-
-	// Sleep time for each loop in LooperThread in ms
+	
+	//Sleep time for each loop in LooperThread in ms
 	private static int LOOPER_DELAY = 20;
-
+	
 	// Associated Runnable for the Thread above
 	private Runnable mNetworkRunnable = new Runnable() {
 		public void run() {
-			try {
-				mConnection = new StreamConnection(mHost, mPort, mQueue,
-						mCallback, mParser);
-				// Begin listening
-				mConnection.beginConnection();
-			} catch (UnknownHostException e) {
-				Logd("UnknownHostException: " + e.getLocalizedMessage());
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				Logd("IOException: " + e.getLocalizedMessage());
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+			mConnection.beginConnection();
 		}
 	};
 
 	private Runnable mLooperRunnable = new Runnable() {
 		public void run() {
-			// The next packet to be processed
-			Packet rcvPacket;
-			// Response to be sent to server 
-			Response response;
 			while (true) {
-				// Grab the next packet from the queue
-				if (!mQueue.isEmpty()) {
-					rcvPacket = mQueue.remove();
-					
-					// Do some logging
-					// Logd("Packet received: " + rcvPacket.toString());
-					
-					response = rcvPacket.generateResponse();
-					Utility.dump(response, mPrinter);
-					
-					// Send the response over the network
-					mConnection.writeResponse(response);
+				if(!mQueue.isEmpty()){
+					Logd("Packet received!");
+					mQueue.remove();
 				}
-
+				
 				try {
 					Thread.sleep(LOOPER_DELAY);
 				} catch (InterruptedException e) {
@@ -114,27 +77,27 @@ public class MainActivity extends Activity implements ConnectionCallback, Printe
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
-		// Initializes constants required  
-		DroidSynergyBuild.initialize("android");
-		
 		// This has to be called before passing the map to parser
 		initializesAssociationMap();
-		
 		mParser = new SimpleParser(mStringToPacketMap);
-		
 		mQueue = new LinkedList<Packet>();
+		try {
+			mConnection = new StreamConnection(mHost, mPort, mQueue, this, mParser);
+			mNetworkThread = new Thread(mNetworkRunnable);
+			mNetworkThread.start();
+			// Don't run the looper until connection is made
+			mLooperThread = new Thread(mLooperRunnable);
+		} catch (UnknownHostException e) {
+			Logd("UnknownHostException: " + e.getLocalizedMessage());
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			Logd("IOException!");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		mCallback = this;
-		
-		mPrinter = this;
-		
-		// Start the connection thread
-		mNetworkThread = new Thread(mNetworkRunnable);
-		mNetworkThread.start();
-		
-		// Don't run the looper until connection is made
-		mLooperThread = new Thread(mLooperRunnable);
+		Logd("onCreate returns");
 	}
 
 	// Initializes the association map
@@ -165,23 +128,13 @@ public class MainActivity extends Activity implements ConnectionCallback, Printe
 		Logd(msg);
 	}
 	
-	public void log(String msg){
-		Logd("LOG:" + msg);
-	}
-
 	// Log.d wrapper
-	public void Logd(String msg) {
+	public void Logd(String msg){
 		Log.d(TAG, msg);
 	}
-
 	// Log.e then exit
-	public void LogFatal(String msg) {
+	public void LogFatal(String msg){
 		Log.e(TAG, msg);
 		System.exit(1);
-	}
-
-	// Invoked only for debugging purposes
-	public void println(String x) {
-		Logd(x);
 	}
 }
