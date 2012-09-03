@@ -9,12 +9,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import android.util.Log;
-
 import com.blacksoil.droidsynergy.packet.Packet;
 import com.blacksoil.droidsynergy.parser.Parser;
 import com.blacksoil.droidsynergy.response.Response;
 import com.blacksoil.droidsynergy.utils.Converter;
+import com.blacksoil.droidsynergy.utils.Utility;
 
 /*
  * Implementation of a Connection
@@ -126,11 +125,12 @@ public class StreamConnection implements Connection {
 					}
 
 					synchronized (mPacketQueue) {
-						Packet parsedPacket = mParser.parse(packets);
-						if(parsedPacket == null){
-							mCallback.error("Unhandled packet!");
+						try{
+							Packet parsedPacket = mParser.parse(packets);
+							mPacketQueue.add(parsedPacket);
+						} catch(RuntimeException e){
+							mCallback.error("UnknownPacket: \n" + e.getLocalizedMessage());
 						}
-						mPacketQueue.add(parsedPacket);
 					}
 
 				} catch (IOException e) {
@@ -168,7 +168,8 @@ public class StreamConnection implements Connection {
 			throw new IllegalArgumentException("resp shouldn't be null!");
 		}
 		
-		// mCallback.log("Sending response: " + responseBytes.size() + " bytes.");
+		mCallback.log("Sending response: " + responseBytes.size() + " bytes.");
+		mCallback.log(Utility.dump(responseBytes));
 		try {
 			while(!responseBytes.isEmpty()){
 				mOut.write(responseBytes.remove(0));

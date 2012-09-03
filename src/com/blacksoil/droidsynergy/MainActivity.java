@@ -19,12 +19,14 @@ import com.blacksoil.droidsynergy.connection.StreamConnection;
 import com.blacksoil.droidsynergy.constant.DroidSynergyBuild;
 import com.blacksoil.droidsynergy.packet.HandshakePacket;
 import com.blacksoil.droidsynergy.packet.Packet;
+import com.blacksoil.droidsynergy.packet.ScreenInfoPacket;
 import com.blacksoil.droidsynergy.parser.Parser;
 import com.blacksoil.droidsynergy.parser.SimpleParser;
 import com.blacksoil.droidsynergy.response.Response;
+import com.blacksoil.droidsynergy.response.ScreenInfoResponse;
 import com.blacksoil.droidsynergy.utils.Utility;
 
-public class MainActivity extends Activity implements ConnectionCallback, Printer {
+public class MainActivity extends Activity implements ConnectionCallback, Logger {
 	private String mHost = "192.168.1.8";
 	private int mPort = 24800;
 
@@ -48,6 +50,9 @@ public class MainActivity extends Activity implements ConnectionCallback, Printe
 
 	// Callback for Connection
 	private ConnectionCallback mCallback;
+	
+	// Logging interface
+	private Logger mLogger;
 	
 	// Printer for logging purposes
 	private Printer mPrinter;
@@ -89,12 +94,11 @@ public class MainActivity extends Activity implements ConnectionCallback, Printe
 				// Grab the next packet from the queue
 				if (!mQueue.isEmpty()) {
 					rcvPacket = mQueue.remove();
-					
-					// Do some logging
-					// Logd("Packet received: " + rcvPacket.toString());
+					// Log the packet textual description
+					Logd(rcvPacket.getDescription());
 					
 					response = rcvPacket.generateResponse();
-					Utility.dump(response, mPrinter);
+					// Utility.dump(response, mPrinter);
 					
 					// Send the response over the network
 					mConnection.writeResponse(response);
@@ -116,7 +120,7 @@ public class MainActivity extends Activity implements ConnectionCallback, Printe
 		setContentView(R.layout.activity_main);
 		
 		// Initializes constants required  
-		DroidSynergyBuild.initialize("android");
+		DroidSynergyBuild.initialize("android", this);
 		
 		// This has to be called before passing the map to parser
 		initializesAssociationMap();
@@ -127,7 +131,9 @@ public class MainActivity extends Activity implements ConnectionCallback, Printe
 		
 		mCallback = this;
 		
-		mPrinter = this;
+		mLogger = this;
+		
+		debug();
 		
 		// Start the connection thread
 		mNetworkThread = new Thread(mNetworkRunnable);
@@ -139,7 +145,10 @@ public class MainActivity extends Activity implements ConnectionCallback, Printe
 
 	// Initializes the association map
 	private void initializesAssociationMap() {
-		mStringToPacketMap.put(HandshakePacket.mType, new HandshakePacket());
+		Packet handShake = new HandshakePacket();
+		Packet screenInfo = new ScreenInfoPacket();
+		mStringToPacketMap.put(handShake.getType(),handShake);
+		mStringToPacketMap.put(screenInfo.getType(),screenInfo);
 	}
 
 	@Override
@@ -158,7 +167,8 @@ public class MainActivity extends Activity implements ConnectionCallback, Printe
 	}
 
 	public void error(String msg) {
-		Logd(msg);
+		Log.e(TAG, msg);
+		System.exit(1);
 	}
 
 	public void problem(String msg) {
@@ -174,14 +184,28 @@ public class MainActivity extends Activity implements ConnectionCallback, Printe
 		Log.d(TAG, msg);
 	}
 
-	// Log.e then exit
-	public void LogFatal(String msg) {
-		Log.e(TAG, msg);
-		System.exit(1);
-	}
-
 	// Invoked only for debugging purposes
 	public void println(String x) {
 		Logd(x);
 	}
+
+	public void Loge(String msg) {
+		Log.e(TAG, msg);
+		System.exit(1);
+	}
+
+	public void Logi(String msg) {
+		Log.i(TAG,msg);
+	}
+	
+	// A silly method 
+	// used to debug
+	public void debug(){
+		String str = Utility.dump(new ScreenInfoResponse().toByteArray());
+		Logd(str);
+		Logd("Height: " + DroidSynergyBuild.getInstance().getScreenHeight());
+		Logd("Width: " + DroidSynergyBuild.getInstance().getScreenWidth());
+		//System.exit(1);
+	}
+	
 }

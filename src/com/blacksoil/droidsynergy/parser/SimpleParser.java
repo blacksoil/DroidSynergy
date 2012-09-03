@@ -8,7 +8,9 @@ import android.util.Printer;
 import com.blacksoil.droidsynergy.connection.ConnectionCallback;
 import com.blacksoil.droidsynergy.packet.Packet;
 import com.blacksoil.droidsynergy.utils.Converter;
+import com.blacksoil.droidsynergy.utils.Utility;
 
+// Simple implementation of Parser
 public class SimpleParser implements Parser {
 	// Map that relates the actual string code to a packet
 	private Map<String, Packet> mStringToPacketMap;
@@ -71,7 +73,7 @@ public class SimpleParser implements Parser {
 			
 			return dupedPacket;
 		}
-		return null;
+		throw new RuntimeException(Utility.dump(packets));
 	}
 	
 	

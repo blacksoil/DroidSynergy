@@ -28,8 +28,8 @@ import com.blacksoil.droidsynergy.response.Response;
  * 
  */
 public class HandshakePacket extends Packet {
-	public static String mType = "Synergy";
-	public static String mDescription = "Synergy Handshake";
+	private final static String mType = "Synergy";
+	private final static String mDescription = "Synergy Handshake";
 
 	public class Argument {
 		public String client_name;

@@ -20,5 +20,6 @@ public interface Parser {
 	// Parse the packet
 	// Throw IllegalArgumentException if packets un-parseable
 	// Throw RuntimeException if packets size is unacceptable
+	// Throw RuntimeException if packets unknown
 	public Packet parse(List<Byte> packets);
 }
