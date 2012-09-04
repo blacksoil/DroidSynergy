@@ -24,9 +24,11 @@ import com.blacksoil.droidsynergy.parser.Parser;
 import com.blacksoil.droidsynergy.parser.SimpleParser;
 import com.blacksoil.droidsynergy.response.Response;
 import com.blacksoil.droidsynergy.response.ScreenInfoResponse;
+import com.blacksoil.droidsynergy.utils.GlobalLogger;
 import com.blacksoil.droidsynergy.utils.Utility;
 
-public class MainActivity extends Activity implements ConnectionCallback, Logger {
+public class MainActivity extends Activity implements ConnectionCallback,
+		Logger {
 	private String mHost = "192.168.1.8";
 	private int mPort = 24800;
 
@@ -50,10 +52,10 @@ public class MainActivity extends Activity implements ConnectionCallback, Logger
 
 	// Callback for Connection
 	private ConnectionCallback mCallback;
-	
+
 	// Logging interface
 	private Logger mLogger;
-	
+
 	// Printer for logging purposes
 	private Printer mPrinter;
 
@@ -88,18 +90,18 @@ public class MainActivity extends Activity implements ConnectionCallback, Logger
 		public void run() {
 			// The next packet to be processed
 			Packet rcvPacket;
-			// Response to be sent to server 
+			// Response to be sent to server
 			Response response;
 			while (true) {
 				// Grab the next packet from the queue
 				if (!mQueue.isEmpty()) {
 					rcvPacket = mQueue.remove();
 					// Log the packet textual description
-					Logd(rcvPacket.getDescription());
-					
+					Logd("Received: " + rcvPacket.getDescription());
+
 					response = rcvPacket.generateResponse();
-					// Utility.dump(response, mPrinter);
-					
+					// Logd(Utility.dump(response));
+
 					// Send the response over the network
 					mConnection.writeResponse(response);
 				}
@@ -118,27 +120,30 @@ public class MainActivity extends Activity implements ConnectionCallback, Logger
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
-		// Initializes constants required  
+
+		// Initializes global logger
+		new GlobalLogger(this);
+
+		// Initializes constants required
 		DroidSynergyBuild.initialize("android", this);
-		
+
 		// This has to be called before passing the map to parser
 		initializesAssociationMap();
-		
+
 		mParser = new SimpleParser(mStringToPacketMap);
-		
+
 		mQueue = new LinkedList<Packet>();
-		
+
 		mCallback = this;
-		
+
 		mLogger = this;
-		
+
 		debug();
-		
+
 		// Start the connection thread
 		mNetworkThread = new Thread(mNetworkRunnable);
 		mNetworkThread.start();
-		
+
 		// Don't run the looper until connection is made
 		mLooperThread = new Thread(mLooperRunnable);
 	}
@@ -147,8 +152,8 @@ public class MainActivity extends Activity implements ConnectionCallback, Logger
 	private void initializesAssociationMap() {
 		Packet handShake = new HandshakePacket();
 		Packet screenInfo = new ScreenInfoPacket();
-		mStringToPacketMap.put(handShake.getType(),handShake);
-		mStringToPacketMap.put(screenInfo.getType(),screenInfo);
+		mStringToPacketMap.put(handShake.getType(), handShake);
+		mStringToPacketMap.put(screenInfo.getType(), screenInfo);
 	}
 
 	@Override
@@ -174,8 +179,8 @@ public class MainActivity extends Activity implements ConnectionCallback, Logger
 	public void problem(String msg) {
 		Logd(msg);
 	}
-	
-	public void log(String msg){
+
+	public void log(String msg) {
 		Logd("LOG:" + msg);
 	}
 
@@ -195,17 +200,17 @@ public class MainActivity extends Activity implements ConnectionCallback, Logger
 	}
 
 	public void Logi(String msg) {
-		Log.i(TAG,msg);
+		Log.i(TAG, msg);
 	}
-	
-	// A silly method 
+
+	// A silly method
 	// used to debug
-	public void debug(){
-		String str = Utility.dump(new ScreenInfoResponse().toByteArray());
-		Logd(str);
-		Logd("Height: " + DroidSynergyBuild.getInstance().getScreenHeight());
-		Logd("Width: " + DroidSynergyBuild.getInstance().getScreenWidth());
-		//System.exit(1);
+	public void debug() {
+		// String str = Utility.dump(new ScreenInfoResponse().toByteArray());
+		// Logd(str);
+		// Logd("Height: " + DroidSynergyBuild.getInstance().getScreenHeight());
+		// Logd("Width: " + DroidSynergyBuild.getInstance().getScreenWidth());
+		// System.exit(1);
 	}
-	
+
 }

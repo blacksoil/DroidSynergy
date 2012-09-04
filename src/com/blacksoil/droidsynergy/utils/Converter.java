@@ -35,6 +35,7 @@ public class Converter {
 		if (dest == null)
 			throw new IllegalArgumentException("dest can't be null");
 		byte[] src_converted = convertInt16ToNetwork(src);
+		
 		for (int i = 0; i < src_converted.length; i++) {
 			dest.add(src_converted[i]);
 		}

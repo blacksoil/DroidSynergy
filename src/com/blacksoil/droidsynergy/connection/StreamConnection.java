@@ -94,7 +94,7 @@ public class StreamConnection implements Connection {
 						mCallback.disconnected();
 					}
 					else{
-						mCallback.log("Got packet: " + readlen + " bytes.");
+						//mCallback.log("Got packet: " + readlen + " bytes.");
 					}
 					
 					// Copy the read() result in to the global buffer
@@ -169,11 +169,13 @@ public class StreamConnection implements Connection {
 		}
 		
 		mCallback.log("Sending response: " + responseBytes.size() + " bytes.");
-		mCallback.log(Utility.dump(responseBytes));
+		//mCallback.log("Queue left: " + mPacketQueue.size());
+		//mCallback.log(Utility.dump(responseBytes));
 		try {
-			while(!responseBytes.isEmpty()){
-				mOut.write(responseBytes.remove(0));
-			}
+			for(int i = 0 ; i < responseBytes.size() ; i++){
+				mOut.write(responseBytes.get(i));
+				//mCallback.log(""+responseBytes.get(i));
+			}			
 			mOut.flush();
 		} catch (IOException e) {
 			mCallback.problem("write() fails");
