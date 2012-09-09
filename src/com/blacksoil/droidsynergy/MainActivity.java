@@ -10,7 +10,6 @@ import java.util.Queue;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Printer;
 import android.view.Menu;
 
 import com.blacksoil.droidsynergy.connection.Connection;
@@ -18,18 +17,19 @@ import com.blacksoil.droidsynergy.connection.ConnectionCallback;
 import com.blacksoil.droidsynergy.connection.StreamConnection;
 import com.blacksoil.droidsynergy.constant.DroidSynergyBuild;
 import com.blacksoil.droidsynergy.packet.HandshakePacket;
+import com.blacksoil.droidsynergy.packet.InfoAcknowledgmentPacket;
 import com.blacksoil.droidsynergy.packet.Packet;
+import com.blacksoil.droidsynergy.packet.ResetOptionPacket;
 import com.blacksoil.droidsynergy.packet.ScreenInfoPacket;
+import com.blacksoil.droidsynergy.packet.SetOptionPacket;
 import com.blacksoil.droidsynergy.parser.Parser;
 import com.blacksoil.droidsynergy.parser.SimpleParser;
 import com.blacksoil.droidsynergy.response.Response;
-import com.blacksoil.droidsynergy.response.ScreenInfoResponse;
 import com.blacksoil.droidsynergy.utils.GlobalLogger;
-import com.blacksoil.droidsynergy.utils.Utility;
 
 public class MainActivity extends Activity implements ConnectionCallback,
 		Logger {
-	private String mHost = "192.168.1.8";
+	private String mHost = "192.168.1.142";
 	private int mPort = 24800;
 
 	// Thread that handles network connections
@@ -55,9 +55,6 @@ public class MainActivity extends Activity implements ConnectionCallback,
 
 	// Logging interface
 	private Logger mLogger;
-
-	// Printer for logging purposes
-	private Printer mPrinter;
 
 	// Logging TAG
 	private static String TAG = "DroidSynergy";
@@ -152,8 +149,15 @@ public class MainActivity extends Activity implements ConnectionCallback,
 	private void initializesAssociationMap() {
 		Packet handShake = new HandshakePacket();
 		Packet screenInfo = new ScreenInfoPacket();
+		Packet infoAcknowledgment = new InfoAcknowledgmentPacket();
+		Packet resetOption = new ResetOptionPacket();
+		Packet setOption = new SetOptionPacket();
+		
 		mStringToPacketMap.put(handShake.getType(), handShake);
 		mStringToPacketMap.put(screenInfo.getType(), screenInfo);
+		mStringToPacketMap.put(infoAcknowledgment.getType(), infoAcknowledgment);
+		mStringToPacketMap.put(resetOption.getType(), resetOption);
+		mStringToPacketMap.put(setOption.getType(), setOption);
 	}
 
 	@Override

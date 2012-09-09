@@ -13,7 +13,6 @@ import com.blacksoil.droidsynergy.packet.Packet;
 import com.blacksoil.droidsynergy.parser.Parser;
 import com.blacksoil.droidsynergy.response.Response;
 import com.blacksoil.droidsynergy.utils.Converter;
-import com.blacksoil.droidsynergy.utils.Utility;
 
 /*
  * Implementation of a Connection
@@ -103,7 +102,8 @@ public class StreamConnection implements Connection {
 					}
 
 					packlen = Converter.getPacketLength(mByteBuffer);
-
+					mCallback.log("Packet length: " + packlen);
+					
 					// Getting 512 byte in a single read doesn't quite make
 					// sense?
 					// Something goes wrong?
