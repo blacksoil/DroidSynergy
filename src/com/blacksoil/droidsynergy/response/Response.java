@@ -25,6 +25,12 @@ public abstract class Response {
 		List<Byte> toReturn = new LinkedList<Byte>();
 		toReturn.addAll(mByte);
 		
+		// If the response is empty, don't
+		// append the size because this is
+		// a response-less packet
+		if(toReturn.size() == 0){
+			return toReturn;
+		}
 		// Add the packet size
 		Converter.insertSize(toReturn);
 		return toReturn;

@@ -16,8 +16,10 @@ import com.blacksoil.droidsynergy.connection.Connection;
 import com.blacksoil.droidsynergy.connection.ConnectionCallback;
 import com.blacksoil.droidsynergy.connection.StreamConnection;
 import com.blacksoil.droidsynergy.constant.DroidSynergyBuild;
+import com.blacksoil.droidsynergy.packet.EnterScreenPacket;
 import com.blacksoil.droidsynergy.packet.HandshakePacket;
 import com.blacksoil.droidsynergy.packet.InfoAcknowledgmentPacket;
+import com.blacksoil.droidsynergy.packet.KeepAlivePacket;
 import com.blacksoil.droidsynergy.packet.Packet;
 import com.blacksoil.droidsynergy.packet.ResetOptionPacket;
 import com.blacksoil.droidsynergy.packet.ScreenInfoPacket;
@@ -89,12 +91,12 @@ public class MainActivity extends Activity implements ConnectionCallback,
 			Packet rcvPacket;
 			// Response to be sent to server
 			Response response;
-			while (true) {
+			while (mConnection.isConnected()) {
 				// Grab the next packet from the queue
 				if (!mQueue.isEmpty()) {
 					rcvPacket = mQueue.remove();
 					// Log the packet textual description
-					Logd("Received: " + rcvPacket.getDescription());
+					Logd("Received: " + rcvPacket.getDescription() + "\n");
 
 					response = rcvPacket.generateResponse();
 					// Logd(Utility.dump(response));
@@ -110,6 +112,7 @@ public class MainActivity extends Activity implements ConnectionCallback,
 					e.printStackTrace();
 				}
 			}
+			log("Looper Thread quits");
 		}
 	};
 
@@ -136,12 +139,18 @@ public class MainActivity extends Activity implements ConnectionCallback,
 		mLogger = this;
 
 		debug();
-
+		// Start the network and polling thread
+		startThreads();
+	}
+	
+	// Starts the network and polling thread
+	private void startThreads(){
 		// Start the connection thread
 		mNetworkThread = new Thread(mNetworkRunnable);
 		mNetworkThread.start();
 
 		// Don't run the looper until connection is made
+		// Will be started when isConnected() callback is called
 		mLooperThread = new Thread(mLooperRunnable);
 	}
 
@@ -152,12 +161,16 @@ public class MainActivity extends Activity implements ConnectionCallback,
 		Packet infoAcknowledgment = new InfoAcknowledgmentPacket();
 		Packet resetOption = new ResetOptionPacket();
 		Packet setOption = new SetOptionPacket();
+		Packet keepAlive = new KeepAlivePacket();
+		Packet enterScreen = new EnterScreenPacket();
 		
 		mStringToPacketMap.put(handShake.getType(), handShake);
 		mStringToPacketMap.put(screenInfo.getType(), screenInfo);
 		mStringToPacketMap.put(infoAcknowledgment.getType(), infoAcknowledgment);
 		mStringToPacketMap.put(resetOption.getType(), resetOption);
 		mStringToPacketMap.put(setOption.getType(), setOption);
+		mStringToPacketMap.put(keepAlive.getType(), keepAlive);
+		mStringToPacketMap.put(enterScreen.getType(), enterScreen);
 	}
 
 	@Override
@@ -173,6 +186,16 @@ public class MainActivity extends Activity implements ConnectionCallback,
 
 	public void disconnected() {
 		Logd("Disconnected!");
+		// Sleep for a while
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// Reconnect
+		 startThreads();
+		System.exit(1);
 	}
 
 	public void error(String msg) {

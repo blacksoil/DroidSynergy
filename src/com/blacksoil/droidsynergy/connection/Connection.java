@@ -18,6 +18,8 @@ public interface Connection {
 	public boolean writeResponse(Response resp);
 	// Begin looping the network connection
 	public void beginConnection();
+	// Returns true if the socket is connected
+	public boolean isConnected();
 	/*
 	 * TODO:
 	 * + getConnectionState 

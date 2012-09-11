@@ -2,38 +2,43 @@ package com.blacksoil.droidsynergy.packet;
 
 import java.util.List;
 
+import com.blacksoil.droidsynergy.response.KeepAliveResponse;
 import com.blacksoil.droidsynergy.response.Response;
 
+/*
+ * Keep Alive packet
+ * Essentially the server requests this to be sure
+ * that the connection is still maintained.
+ * 
+ * Simply reply with the string CALV
+ */
 public class KeepAlivePacket extends Packet {
+	private final static String mType = "CALV";
+	private final static String mDescription = "Keep Alive";
 
 	@Override
 	public String getType() {
-		// TODO Auto-generated method stub
-		return null;
+		return mType;
 	}
 
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return mDescription;
 	}
 
 	@Override
 	public Response generateResponse() {
-		// TODO Auto-generated method stub
-		return null;
+		return new KeepAliveResponse();
 	}
 
 	@Override
 	public Packet getInstance(List<Byte> packets) {
-		// TODO Auto-generated method stub
-		return null;
+		return new KeepAlivePacket();
 	}
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return null;
+		return mDescription;
 	}
 
 }

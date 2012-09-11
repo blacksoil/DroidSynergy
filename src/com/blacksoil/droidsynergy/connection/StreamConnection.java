@@ -39,6 +39,8 @@ public class StreamConnection implements Connection {
 	private List<Byte> mByteBuffer;
 	// Parser that is being used
 	private Parser mParser;
+	// Indicates whether the socket is connected or not
+	private boolean mConnected = false;
 
 	/*
 	 * Arguments:
@@ -51,7 +53,13 @@ public class StreamConnection implements Connection {
 	public StreamConnection(String host, int port, Queue<Packet> queue,
 			ConnectionCallback callback, Parser parser)
 			throws UnknownHostException, IOException {
+		// Delay for the main loop
+		mTimeout = 50;
+		
 		mSocket = new Socket(host, port);
+		
+		// Set TCP no delay
+		mSocket.setTcpNoDelay(true);
 		// Get input output stream
 		mOut = new DataOutputStream(mSocket.getOutputStream());
 		mIn = new DataInputStream(mSocket.getInputStream());
@@ -63,8 +71,13 @@ public class StreamConnection implements Connection {
 		mParser = parser;
 		// Notify client
 		mCallback.connected();
+		mConnected = true;
 	}
 
+	public boolean isConnected(){
+		return mConnected && mSocket.isConnected();
+	}
+	
 	// The main body of this class
 	// Call this to start the main loop
 	public void beginConnection() {
@@ -77,28 +90,38 @@ public class StreamConnection implements Connection {
 		// List to be processed by Parser
 		List<Byte> packets;
 
-		while (mSocket.isConnected()) {
+		while (isConnected()) {
 
 			try {
 				try {
 					// Renew the parser buffer
 					packets = new LinkedList<Byte>();
 
+					mCallback.log("read()..");
 					// Grab the network data!
 					readlen = mIn.read(buffer, 0, BUFFER_SIZE);
-
+					
 					// Connection closed by the server
-					if (readlen == -1) {
-						mCallback.problem("read() == -1");
+					if (readlen < 0) {
+						mCallback.problem("read() : " + readlen);
+						// Thread.sleep(2000);
+						mCallback.log("Queue size: " + mPacketQueue.size());
+						mConnected = false;
 						mCallback.disconnected();
 					}
 					else{
-						//mCallback.log("Got packet: " + readlen + " bytes.");
+						mCallback.log("Got packet: " + readlen + " bytes.");
 					}
 					
 					// Copy the read() result in to the global buffer
 					for (int i = 0; i < readlen; i++) {
 						mByteBuffer.add(buffer[i]);
+					}
+					
+					// We don't have enough data be to interpreted
+					if(mByteBuffer.size() < 4){
+						mCallback.log("Skipping because data < 4 bytes");
+						continue;
 					}
 
 					packlen = Converter.getPacketLength(mByteBuffer);
@@ -108,12 +131,15 @@ public class StreamConnection implements Connection {
 					// sense?
 					// Something goes wrong?
 					if (packlen > 1000) {
+						mCallback.log("read() returns > 1000");
 						throw new RuntimeException("Read too big: " + packlen);
 					}
 					
 					// We don't have enough data to be processed
 					// Loop until we have enough
 					if(packlen > mByteBuffer.size()){
+						mCallback.log("Not enough data to be processed. " +
+										"Waiting for the next read() cycle");
 						continue;
 					}
 
@@ -138,7 +164,8 @@ public class StreamConnection implements Connection {
 							+ e.getLocalizedMessage());
 					e.printStackTrace();
 				}
-
+				
+				// Sleep a while
 				Thread.sleep(mTimeout);
 			} catch (InterruptedException e) {
 				mCallback.problem("Thread sleep interrupted: "
@@ -169,6 +196,12 @@ public class StreamConnection implements Connection {
 		}
 		
 		mCallback.log("Sending response: " + responseBytes.size() + " bytes.");
+		
+		// No need to flush or send
+		if(responseBytes.size() == 0){
+			return true;
+		}
+		
 		//mCallback.log("Queue left: " + mPacketQueue.size());
 		//mCallback.log(Utility.dump(responseBytes));
 		try {
