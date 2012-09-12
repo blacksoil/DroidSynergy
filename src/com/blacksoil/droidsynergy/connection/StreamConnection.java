@@ -13,6 +13,7 @@ import com.blacksoil.droidsynergy.packet.Packet;
 import com.blacksoil.droidsynergy.parser.Parser;
 import com.blacksoil.droidsynergy.response.Response;
 import com.blacksoil.droidsynergy.utils.Converter;
+import com.blacksoil.droidsynergy.utils.Utility;
 
 /*
  * Implementation of a Connection
@@ -127,6 +128,11 @@ public class StreamConnection implements Connection {
 					packlen = Converter.getPacketLength(mByteBuffer);
 					mCallback.log("Packet length: " + packlen);
 					
+					if(packlen <= 0){
+						mCallback.log("Unusual packet length!");
+						mCallback.log(Utility.dump(mByteBuffer));
+					}
+					
 					// Getting 512 byte in a single read doesn't quite make
 					// sense?
 					// Something goes wrong?
@@ -196,7 +202,7 @@ public class StreamConnection implements Connection {
 		}
 		
 		mCallback.log("Sending response: " + responseBytes.size() + " bytes.");
-		
+		//mCallback.log(Utility.dump(responseBytes));
 		// No need to flush or send
 		if(responseBytes.size() == 0){
 			return true;

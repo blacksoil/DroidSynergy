@@ -16,6 +16,7 @@ import com.blacksoil.droidsynergy.connection.Connection;
 import com.blacksoil.droidsynergy.connection.ConnectionCallback;
 import com.blacksoil.droidsynergy.connection.StreamConnection;
 import com.blacksoil.droidsynergy.constant.DroidSynergyBuild;
+import com.blacksoil.droidsynergy.packet.ClipboardPacket;
 import com.blacksoil.droidsynergy.packet.EnterScreenPacket;
 import com.blacksoil.droidsynergy.packet.HandshakePacket;
 import com.blacksoil.droidsynergy.packet.InfoAcknowledgmentPacket;
@@ -163,6 +164,7 @@ public class MainActivity extends Activity implements ConnectionCallback,
 		Packet setOption = new SetOptionPacket();
 		Packet keepAlive = new KeepAlivePacket();
 		Packet enterScreen = new EnterScreenPacket();
+		Packet clipboard = new ClipboardPacket();
 		
 		mStringToPacketMap.put(handShake.getType(), handShake);
 		mStringToPacketMap.put(screenInfo.getType(), screenInfo);
@@ -171,6 +173,7 @@ public class MainActivity extends Activity implements ConnectionCallback,
 		mStringToPacketMap.put(setOption.getType(), setOption);
 		mStringToPacketMap.put(keepAlive.getType(), keepAlive);
 		mStringToPacketMap.put(enterScreen.getType(), enterScreen);
+		mStringToPacketMap.put(clipboard.getType(), clipboard);
 	}
 
 	@Override
