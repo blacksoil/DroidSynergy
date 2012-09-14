@@ -94,4 +94,11 @@ public class Converter {
 		}
 		return getPacketLength(packet_list);
 	}
+	
+	// Convert bytes into integer
+	public static int intFrom16bit(byte MSB, byte LSB){
+		int result;
+		result = (int)(MSB << 8) + (int)LSB;
+		return result;
+	}
 }

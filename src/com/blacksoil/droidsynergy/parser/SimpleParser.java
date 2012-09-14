@@ -72,6 +72,12 @@ public class SimpleParser implements Parser {
 				// we're encountering, so we don't know how to
 				// initialize a new appropriate Packet
 				Packet packet = mStringToPacketMap.get(keyword);
+				
+				// Strip off the string identifier from the packet
+				for(int i=0;i<keyword.length();i++){
+					packets.remove(0);
+				}
+				
 				// We dupe it indirectly and let it initializes itself
 				Packet dupedPacket = packet.getInstance(packets);
 

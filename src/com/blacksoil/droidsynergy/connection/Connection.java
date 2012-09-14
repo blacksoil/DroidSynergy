@@ -20,6 +20,8 @@ public interface Connection {
 	public void beginConnection();
 	// Returns true if the socket is connected
 	public boolean isConnected();
+	// Returns the size of the packet queue
+	public int getQueueSize();
 	/*
 	 * TODO:
 	 * + getConnectionState 

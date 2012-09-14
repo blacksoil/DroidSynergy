@@ -18,9 +18,11 @@ import com.blacksoil.droidsynergy.connection.StreamConnection;
 import com.blacksoil.droidsynergy.constant.DroidSynergyBuild;
 import com.blacksoil.droidsynergy.packet.ClipboardPacket;
 import com.blacksoil.droidsynergy.packet.EnterScreenPacket;
+import com.blacksoil.droidsynergy.packet.ExitScreenPacket;
 import com.blacksoil.droidsynergy.packet.HandshakePacket;
 import com.blacksoil.droidsynergy.packet.InfoAcknowledgmentPacket;
 import com.blacksoil.droidsynergy.packet.KeepAlivePacket;
+import com.blacksoil.droidsynergy.packet.MouseMovePacket;
 import com.blacksoil.droidsynergy.packet.Packet;
 import com.blacksoil.droidsynergy.packet.ResetOptionPacket;
 import com.blacksoil.droidsynergy.packet.ScreenInfoPacket;
@@ -63,7 +65,9 @@ public class MainActivity extends Activity implements ConnectionCallback,
 	private static String TAG = "DroidSynergy";
 
 	// Sleep time for each loop in LooperThread in ms
-	private static int LOOPER_DELAY = 20;
+	private static int LOOPER_DELAY = 50;
+	
+	private static boolean DEBUG = false;
 
 	// Associated Runnable for the Thread above
 	private Runnable mNetworkRunnable = new Runnable() {
@@ -95,9 +99,10 @@ public class MainActivity extends Activity implements ConnectionCallback,
 			while (mConnection.isConnected()) {
 				// Grab the next packet from the queue
 				if (!mQueue.isEmpty()) {
+					Logd("Queue size: " + mConnection.getQueueSize());
 					rcvPacket = mQueue.remove();
 					// Log the packet textual description
-					Logd("Received: " + rcvPacket.getDescription() + "\n");
+					if(DEBUG) Logd("Received: " + rcvPacket.getDescription() + "\n");
 
 					response = rcvPacket.generateResponse();
 					// Logd(Utility.dump(response));
@@ -164,7 +169,10 @@ public class MainActivity extends Activity implements ConnectionCallback,
 		Packet setOption = new SetOptionPacket();
 		Packet keepAlive = new KeepAlivePacket();
 		Packet enterScreen = new EnterScreenPacket();
+		Packet exitScreen = new ExitScreenPacket();
 		Packet clipboard = new ClipboardPacket();
+		Packet mouseMove = new MouseMovePacket();
+		
 		
 		mStringToPacketMap.put(handShake.getType(), handShake);
 		mStringToPacketMap.put(screenInfo.getType(), screenInfo);
@@ -174,6 +182,8 @@ public class MainActivity extends Activity implements ConnectionCallback,
 		mStringToPacketMap.put(keepAlive.getType(), keepAlive);
 		mStringToPacketMap.put(enterScreen.getType(), enterScreen);
 		mStringToPacketMap.put(clipboard.getType(), clipboard);
+		mStringToPacketMap.put(mouseMove.getType(), mouseMove);
+		mStringToPacketMap.put(exitScreen.getType(), exitScreen);
 	}
 
 	@Override

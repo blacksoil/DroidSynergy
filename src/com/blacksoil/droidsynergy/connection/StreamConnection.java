@@ -14,7 +14,6 @@ import com.blacksoil.droidsynergy.parser.Parser;
 import com.blacksoil.droidsynergy.response.Response;
 import com.blacksoil.droidsynergy.utils.Converter;
 import com.blacksoil.droidsynergy.utils.Utility;
-
 /*
  * Implementation of a Connection
  * This class handles the network connection with
@@ -42,6 +41,8 @@ public class StreamConnection implements Connection {
 	private Parser mParser;
 	// Indicates whether the socket is connected or not
 	private boolean mConnected = false;
+	
+	private static boolean DEBUG = false;
 
 	/*
 	 * Arguments:
@@ -58,9 +59,9 @@ public class StreamConnection implements Connection {
 		mTimeout = 50;
 		
 		mSocket = new Socket(host, port);
-		
 		// Set TCP no delay
 		mSocket.setTcpNoDelay(true);
+		
 		// Get input output stream
 		mOut = new DataOutputStream(mSocket.getOutputStream());
 		mIn = new DataInputStream(mSocket.getInputStream());
@@ -82,7 +83,7 @@ public class StreamConnection implements Connection {
 	// The main body of this class
 	// Call this to start the main loop
 	public void beginConnection() {
-		final int BUFFER_SIZE = 512;
+		final int BUFFER_SIZE = 1024;
 		byte[] buffer = new byte[BUFFER_SIZE];
 		// Result of read()
 		int readlen;
@@ -98,21 +99,21 @@ public class StreamConnection implements Connection {
 					// Renew the parser buffer
 					packets = new LinkedList<Byte>();
 
-					mCallback.log("read()..");
 					// Grab the network data!
 					readlen = mIn.read(buffer, 0, BUFFER_SIZE);
-					
+					mCallback.log("read() just returned!");
 					// Connection closed by the server
 					if (readlen < 0) {
 						mCallback.problem("read() : " + readlen);
 						// Thread.sleep(2000);
-						mCallback.log("Queue size: " + mPacketQueue.size());
 						mConnected = false;
 						mCallback.disconnected();
 					}
 					else{
-						mCallback.log("Got packet: " + readlen + " bytes.");
+						if(DEBUG) mCallback.log("Got packet: " + readlen + " bytes.");
 					}
+					
+					if(DEBUG) mCallback.log("Queue size: " + mPacketQueue.size());
 					
 					// Copy the read() result in to the global buffer
 					for (int i = 0; i < readlen; i++) {
@@ -126,7 +127,7 @@ public class StreamConnection implements Connection {
 					}
 
 					packlen = Converter.getPacketLength(mByteBuffer);
-					mCallback.log("Packet length: " + packlen);
+					if(DEBUG) mCallback.log("Packet length: " + packlen);
 					
 					if(packlen <= 0){
 						mCallback.log("Unusual packet length!");
@@ -195,13 +196,13 @@ public class StreamConnection implements Connection {
 		return mPacketQueue;
 	}
 
-	public boolean writeResponse(Response resp) {
+	public boolean writeResponse(Response resp) {		
 		List<Byte> responseBytes = resp.toByteArray();
 		if (responseBytes == null) {
 			throw new IllegalArgumentException("resp shouldn't be null!");
 		}
 		
-		mCallback.log("Sending response: " + responseBytes.size() + " bytes.");
+		if(DEBUG) mCallback.log("Sending response: " + responseBytes.size() + " bytes.");
 		//mCallback.log(Utility.dump(responseBytes));
 		// No need to flush or send
 		if(responseBytes.size() == 0){
@@ -223,6 +224,10 @@ public class StreamConnection implements Connection {
 		}
 		
 		return true;
+	}
+	
+	public int getQueueSize(){
+		return mPacketQueue.size();
 	}
 
 }
