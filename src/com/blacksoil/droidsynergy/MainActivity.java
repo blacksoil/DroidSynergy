@@ -1,7 +1,5 @@
 package com.blacksoil.droidsynergy;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -24,6 +22,7 @@ import com.blacksoil.droidsynergy.packet.InfoAcknowledgmentPacket;
 import com.blacksoil.droidsynergy.packet.KeepAlivePacket;
 import com.blacksoil.droidsynergy.packet.MouseMovePacket;
 import com.blacksoil.droidsynergy.packet.Packet;
+import com.blacksoil.droidsynergy.packet.RelativeMovePacket;
 import com.blacksoil.droidsynergy.packet.ResetOptionPacket;
 import com.blacksoil.droidsynergy.packet.ScreenInfoPacket;
 import com.blacksoil.droidsynergy.packet.SetOptionPacket;
@@ -72,21 +71,10 @@ public class MainActivity extends Activity implements ConnectionCallback,
 	// Associated Runnable for the Thread above
 	private Runnable mNetworkRunnable = new Runnable() {
 		public void run() {
-			try {
-				mConnection = new StreamConnection(mHost, mPort, mQueue,
-						mCallback, mParser);
-				// Begin listening
-				mConnection.beginConnection();
-			} catch (UnknownHostException e) {
-				Logd("UnknownHostException: " + e.getLocalizedMessage());
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				Logd("IOException: " + e.getLocalizedMessage());
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+			mConnection = new StreamConnection(mHost, mPort, mQueue,
+					 			mCallback, mParser);
+			// Begin listening
+			mConnection.beginConnection();
 		}
 	};
 
@@ -99,7 +87,7 @@ public class MainActivity extends Activity implements ConnectionCallback,
 			while (mConnection.isConnected()) {
 				// Grab the next packet from the queue
 				if (!mQueue.isEmpty()) {
-					Logd("Queue size: " + mConnection.getQueueSize());
+					if(DEBUG) Logd("Queue size: " + mConnection.getQueueSize());
 					rcvPacket = mQueue.remove();
 					// Log the packet textual description
 					if(DEBUG) Logd("Received: " + rcvPacket.getDescription() + "\n");
@@ -172,6 +160,7 @@ public class MainActivity extends Activity implements ConnectionCallback,
 		Packet exitScreen = new ExitScreenPacket();
 		Packet clipboard = new ClipboardPacket();
 		Packet mouseMove = new MouseMovePacket();
+		Packet relMove = new RelativeMovePacket();
 		
 		
 		mStringToPacketMap.put(handShake.getType(), handShake);
@@ -184,6 +173,7 @@ public class MainActivity extends Activity implements ConnectionCallback,
 		mStringToPacketMap.put(clipboard.getType(), clipboard);
 		mStringToPacketMap.put(mouseMove.getType(), mouseMove);
 		mStringToPacketMap.put(exitScreen.getType(), exitScreen);
+		mStringToPacketMap.put(relMove.getType(), relMove);
 	}
 
 	@Override

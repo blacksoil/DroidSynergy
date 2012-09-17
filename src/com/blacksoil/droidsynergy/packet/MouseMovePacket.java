@@ -2,15 +2,14 @@ package com.blacksoil.droidsynergy.packet;
 
 import java.util.List;
 
-import com.blacksoil.droidsynergy.Logger;
 import com.blacksoil.droidsynergy.response.NoOpResponse;
 import com.blacksoil.droidsynergy.response.Response;
 import com.blacksoil.droidsynergy.utils.Converter;
 import com.blacksoil.droidsynergy.utils.GlobalLogger;
-import com.blacksoil.droidsynergy.utils.Utility;
 
 /*
  * Packet that request mouse movement
+ * Absolute movement
  */
 public class MouseMovePacket extends Packet{
 	private final static String mType = "DMMV";

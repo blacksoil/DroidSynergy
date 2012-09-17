@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -14,14 +13,6 @@ import com.blacksoil.droidsynergy.parser.Parser;
 import com.blacksoil.droidsynergy.response.Response;
 import com.blacksoil.droidsynergy.utils.Converter;
 import com.blacksoil.droidsynergy.utils.Utility;
-/*
- * Implementation of a Connection
- * This class handles the network connection with
- * Synergy server using a Socket
- * 
- * REMEMBER to run this class in a separate thread!
- * REMEMBER to synchronized on queue!
- */
 
 public class StreamConnection implements Connection {
 	// Input output streams
@@ -41,9 +32,9 @@ public class StreamConnection implements Connection {
 	private Parser mParser;
 	// Indicates whether the socket is connected or not
 	private boolean mConnected = false;
-	
+	// A single read() buffer size
+	private static final int BUFFER_SIZE = 1024;
 	private static boolean DEBUG = false;
-
 	/*
 	 * Arguments:
 	 * 
@@ -53,27 +44,32 @@ public class StreamConnection implements Connection {
 	 * Parser class
 	 */
 	public StreamConnection(String host, int port, Queue<Packet> queue,
-			ConnectionCallback callback, Parser parser)
-			throws UnknownHostException, IOException {
+			ConnectionCallback callback, Parser parser) {
+		
 		// Delay for the main loop
 		mTimeout = 50;
-		
-		mSocket = new Socket(host, port);
-		// Set TCP no delay
-		mSocket.setTcpNoDelay(true);
-		
-		// Get input output stream
-		mOut = new DataOutputStream(mSocket.getOutputStream());
-		mIn = new DataInputStream(mSocket.getInputStream());
 		mPacketQueue = queue;
 		mCallback = callback;
-		// Initializes the global buffer
-		mByteBuffer = new LinkedList<Byte>();
-		// Initializes the parser
-		mParser = parser;
-		// Notify client
-		mCallback.connected();
-		mConnected = true;
+		
+		try{
+			mSocket = new Socket(host, port);
+			// Set TCP no delay
+			mSocket.setTcpNoDelay(true);
+			// Get input output stream
+			mOut = new DataOutputStream(mSocket.getOutputStream());
+			mIn = new DataInputStream(mSocket.getInputStream());
+			// Initializes the global buffer
+			mByteBuffer = new LinkedList<Byte>();
+			// Initializes the parser
+			mParser = parser;	
+			// Notify client
+			mCallback.connected();
+			mConnected = true;
+		} 
+		catch(Exception ex){
+			mCallback.error(ex.getLocalizedMessage());
+		}
+		
 	}
 
 	public boolean isConnected(){
@@ -83,22 +79,17 @@ public class StreamConnection implements Connection {
 	// The main body of this class
 	// Call this to start the main loop
 	public void beginConnection() {
-		final int BUFFER_SIZE = 1024;
 		byte[] buffer = new byte[BUFFER_SIZE];
 		// Result of read()
 		int readlen;
-		// Parsed packet length
-		int packlen;
-		// List to be processed by Parser
-		List<Byte> packets;
-
+		
+		// Kicks in the thread whose job
+		// is to parse the received bytes
+		new Thread(mReceivedDataParser).start();
+		
 		while (isConnected()) {
-
 			try {
 				try {
-					// Renew the parser buffer
-					packets = new LinkedList<Byte>();
-
 					// Grab the network data!
 					readlen = mIn.read(buffer, 0, BUFFER_SIZE);
 					mCallback.log("read() just returned!");
@@ -113,59 +104,15 @@ public class StreamConnection implements Connection {
 						if(DEBUG) mCallback.log("Got packet: " + readlen + " bytes.");
 					}
 					
-					if(DEBUG) mCallback.log("Queue size: " + mPacketQueue.size());
-					
-					// Copy the read() result in to the global buffer
-					for (int i = 0; i < readlen; i++) {
-						mByteBuffer.add(buffer[i]);
-					}
-					
-					// We don't have enough data be to interpreted
-					if(mByteBuffer.size() < 4){
-						mCallback.log("Skipping because data < 4 bytes");
-						continue;
-					}
-
-					packlen = Converter.getPacketLength(mByteBuffer);
-					if(DEBUG) mCallback.log("Packet length: " + packlen);
-					
-					if(packlen <= 0){
-						mCallback.log("Unusual packet length!");
-						mCallback.log(Utility.dump(mByteBuffer));
-					}
-					
-					// Getting 512 byte in a single read doesn't quite make
-					// sense?
-					// Something goes wrong?
-					if (packlen > 1000) {
-						mCallback.log("read() returns > 1000");
-						throw new RuntimeException("Read too big: " + packlen);
-					}
-					
-					// We don't have enough data to be processed
-					// Loop until we have enough
-					if(packlen > mByteBuffer.size()){
-						mCallback.log("Not enough data to be processed. " +
-										"Waiting for the next read() cycle");
-						continue;
-					}
-
-					// +4 for the packet size itself
-					for (int i = 0; i < (packlen + 4); i++) {
-						// Move it to the Parser buffer while removing the
-						// original
-						packets.add(mByteBuffer.remove(0));
-					}
-
-					synchronized (mPacketQueue) {
-						try{
-							Packet parsedPacket = mParser.parse(packets);
-							mPacketQueue.add(parsedPacket);
-						} catch(RuntimeException e){
-							mCallback.error("UnknownPacket: \n" + e.getLocalizedMessage());
+					synchronized(mByteBuffer){
+						// Copy the read() result in to the global buffer
+						for (int i = 0; i < readlen; i++) {
+							mByteBuffer.add(buffer[i]);
 						}
+						mByteBuffer.notifyAll();
 					}
-
+					
+					
 				} catch (IOException e) {
 					mCallback.problem("read() results in an exception: "
 							+ e.getLocalizedMessage());
@@ -182,7 +129,90 @@ public class StreamConnection implements Connection {
 		}
 		mCallback.disconnected();
 	}
+	
+	public Runnable mReceivedDataParser = new Runnable(){
+		public void run(){
+			while(isConnected()){
+				int packlen;
+				List<Byte> packets = new LinkedList<Byte>();
+				
+				// We don't have enough data be to interpreted
+				// We wait until we do
+				synchronized(mByteBuffer){
+					while(mByteBuffer.size() < 4){
+						try {
+							mByteBuffer.wait();
+						} catch (InterruptedException e) {
+							mCallback.log("wait() is interrupted!");
+							e.printStackTrace();
+							break;
+						}
+						//mCallback.log("Skipping because data < 4 bytes");
+					}
+				}
+				
+				synchronized(mByteBuffer){
+					packlen = Converter.getPacketLength(mByteBuffer);
+					if(DEBUG) mCallback.log("Packet length: " + packlen);
+					//The interpreted packet length is invalid
+					if(packlen <= 0){
+						mCallback.log("Unusual packet length: " + packlen);
+						mCallback.error(Utility.dump(mByteBuffer));
+						//mCallback.log("Actual global buffer size: " + mByteBuffer.size());
+						
+					}
+				}
+				
+				
+				
+				// Having a packet with length > 512 doesn't quite make sense?
+				// Something goes wrong?
+				if (packlen > BUFFER_SIZE) {
+					mCallback.error("read() returns > 512 : " + packlen);
+				}
+				
+				// We don't have enough data to be processed
+				// Loop until we have enough
+				synchronized(mByteBuffer){
+					while(packlen > mByteBuffer.size()){
+						try {
+							mByteBuffer.wait();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						//mCallback.log("Not enough data to be processed. " +
+						//				"Waiting for the next read() cycle");
+					}
+				}
+				
+				/*
+				if(true){
+					//mCallback.log(Utility.dump(mByteBuffer));
+					mCallback.log("mByteBuffer size: " + mByteBuffer.size());
+				}
+				*/
 
+				// +4 for the packet size itself
+				synchronized(mByteBuffer){
+					for (int i = 0; i < (packlen + 4); i++) {
+						// Move it to the Parser buffer while removing the
+						// original
+						packets.add(mByteBuffer.remove(0));
+					}
+					try{
+						Packet parsedPacket = mParser.parse(packets);
+						mPacketQueue.add(parsedPacket);
+					} catch(RuntimeException e){
+						mCallback.error("UnknownPacket: \n" + e.getLocalizedMessage());
+					}
+				}
+
+
+			}
+		}
+	};
+	
 	public Packet getNextPacket() {
 		synchronized (mPacketQueue) {
 			if (!mPacketQueue.isEmpty()) {

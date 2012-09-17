@@ -22,6 +22,7 @@ public interface Connection {
 	public boolean isConnected();
 	// Returns the size of the packet queue
 	public int getQueueSize();
+	
 	/*
 	 * TODO:
 	 * + getConnectionState 
