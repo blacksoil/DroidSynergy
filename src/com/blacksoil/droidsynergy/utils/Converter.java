@@ -77,10 +77,10 @@ public class Converter {
 		if (packet.size() < 4)
 			throw new IllegalArgumentException("packet size less than 4");
 		int packet_size = 0;
-		packet_size += (packet.get(0) << 24);
-		packet_size += (packet.get(1) << 16);
-		packet_size += (packet.get(2) << 8);
-		packet_size += packet.get(3);
+		packet_size |= (packet.get(0) << 24);
+		packet_size |= (packet.get(1) << 16);
+		packet_size |= (packet.get(2) << 8);
+		packet_size |= packet.get(3);
 		return packet_size;
 	}
 
@@ -97,8 +97,37 @@ public class Converter {
 	
 	// Convert bytes into integer
 	public static int intFrom16bit(byte MSB, byte LSB){
-		int result;
-		result = (int)(MSB << 8) + (int)LSB;
+		int result = 0;
+		
+		// We don't mask because we actually
+		// want the sign to be correct
+		// Java does the sign extension by default
+		result |= (MSB);
+		result <<= 8;
+		// We mask because we don't use the sign
+		// of LSB
+		result |= (LSB & 0xFF);
 		return result;
+		
+		
+		/*
+		result |= MSB << 8;
+		result |= (byte)LSB & 0xFF;
+		
+		return result;
+		*/
+		/*
+		int a = MSB << 8;
+		int b = LSB;
+		if(a < 0){
+			throw new RuntimeException("a negative!:" + a);
+		}
+		if(b < 0){
+			throw new RuntimeException("b negative!:" + b);
+		}
+		result = a +b;
+		return result;
+		*/
+		
 	}
 }

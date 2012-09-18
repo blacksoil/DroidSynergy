@@ -92,7 +92,7 @@ public class StreamConnection implements Connection {
 				try {
 					// Grab the network data!
 					readlen = mIn.read(buffer, 0, BUFFER_SIZE);
-					mCallback.log("read() just returned!");
+					if(DEBUG) mCallback.log("read() just returned!");
 					// Connection closed by the server
 					if (readlen < 0) {
 						mCallback.problem("read() : " + readlen);
@@ -184,17 +184,8 @@ public class StreamConnection implements Connection {
 						//mCallback.log("Not enough data to be processed. " +
 						//				"Waiting for the next read() cycle");
 					}
-				}
-				
-				/*
-				if(true){
-					//mCallback.log(Utility.dump(mByteBuffer));
-					mCallback.log("mByteBuffer size: " + mByteBuffer.size());
-				}
-				*/
 
-				// +4 for the packet size itself
-				synchronized(mByteBuffer){
+					// +4 for the packet size itself
 					for (int i = 0; i < (packlen + 4); i++) {
 						// Move it to the Parser buffer while removing the
 						// original
