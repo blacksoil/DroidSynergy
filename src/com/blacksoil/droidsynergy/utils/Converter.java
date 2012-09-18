@@ -77,10 +77,10 @@ public class Converter {
 		if (packet.size() < 4)
 			throw new IllegalArgumentException("packet size less than 4");
 		int packet_size = 0;
-		packet_size |= (packet.get(0) << 24);
-		packet_size |= (packet.get(1) << 16);
-		packet_size |= (packet.get(2) << 8);
-		packet_size |= packet.get(3);
+		packet_size |= ((packet.get(0) & 0xFF) << 24);
+		packet_size |= ((packet.get(1) & 0xFF) << 16);
+		packet_size |= ((packet.get(2) & 0xFF) << 8);
+		packet_size |= (packet.get(3) & 0xFF);
 		return packet_size;
 	}
 

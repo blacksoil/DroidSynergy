@@ -2,7 +2,7 @@ package com.blacksoil.droidsynergy.packet;
 
 import java.util.List;
 
-import com.blacksoil.droidsynergy.constant.DroidSynergyBuild;
+import com.blacksoil.droidsynergy.global.DroidSynergyShared;
 import com.blacksoil.droidsynergy.response.HandshakeResponse;
 import com.blacksoil.droidsynergy.response.Response;
 
@@ -48,7 +48,7 @@ public class HandshakePacket extends Packet {
 	@Override
 	public Response generateResponse() {
 		// Simply reply with a packet that says "Synergy" to reply the handshake
-		Response handshakeResponse = new HandshakeResponse(DroidSynergyBuild.getInstance().getClientName());
+		Response handshakeResponse = new HandshakeResponse(DroidSynergyShared.getInstance().getClientName());
 		return handshakeResponse;
 	}
 

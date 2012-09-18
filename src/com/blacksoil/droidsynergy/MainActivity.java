@@ -10,10 +10,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 
-import com.blacksoil.droidsynergy.connection.Connection;
-import com.blacksoil.droidsynergy.connection.ConnectionCallback;
+import com.blacksoil.droidsynergy.connection.ConnectionCallbackInterface;
+import com.blacksoil.droidsynergy.connection.ConnectionInterface;
 import com.blacksoil.droidsynergy.connection.StreamConnection;
-import com.blacksoil.droidsynergy.constant.DroidSynergyBuild;
+import com.blacksoil.droidsynergy.global.DroidSynergyShared;
+import com.blacksoil.droidsynergy.input.SimpleInput;
 import com.blacksoil.droidsynergy.packet.ClipboardPacket;
 import com.blacksoil.droidsynergy.packet.EnterScreenPacket;
 import com.blacksoil.droidsynergy.packet.ExitScreenPacket;
@@ -26,12 +27,12 @@ import com.blacksoil.droidsynergy.packet.RelativeMovePacket;
 import com.blacksoil.droidsynergy.packet.ResetOptionPacket;
 import com.blacksoil.droidsynergy.packet.ScreenInfoPacket;
 import com.blacksoil.droidsynergy.packet.SetOptionPacket;
-import com.blacksoil.droidsynergy.parser.Parser;
+import com.blacksoil.droidsynergy.parser.ParserInterface;
 import com.blacksoil.droidsynergy.parser.SimpleParser;
 import com.blacksoil.droidsynergy.response.Response;
 import com.blacksoil.droidsynergy.utils.GlobalLogger;
 
-public class MainActivity extends Activity implements ConnectionCallback,
+public class MainActivity extends Activity implements ConnectionCallbackInterface,
 		Logger {
 	private String mHost = "192.168.1.142";
 	private int mPort = 24800;
@@ -46,19 +47,16 @@ public class MainActivity extends Activity implements ConnectionCallback,
 	private Map<String, Packet> mStringToPacketMap = new HashMap<String, Packet>();
 
 	// Network connection handler
-	private Connection mConnection;
+	private ConnectionInterface mConnection;
 
 	// Network byte parser
-	private Parser mParser;
+	private ParserInterface mParser;
 
 	// Packet Queue used to interact with Connection
 	private Queue<Packet> mQueue;
 
 	// Callback for Connection
-	private ConnectionCallback mCallback;
-
-	// Logging interface
-	private Logger mLogger;
+	private ConnectionCallbackInterface mCallback;
 
 	// Logging TAG
 	private static String TAG = "DroidSynergy";
@@ -119,7 +117,7 @@ public class MainActivity extends Activity implements ConnectionCallback,
 		new GlobalLogger(this);
 
 		// Initializes constants required
-		DroidSynergyBuild.initialize("android", this);
+		DroidSynergyShared.initialize("android", this, new SimpleInput());
 
 		// This has to be called before passing the map to parser
 		initializesAssociationMap();
@@ -129,8 +127,6 @@ public class MainActivity extends Activity implements ConnectionCallback,
 		mQueue = new LinkedList<Packet>();
 
 		mCallback = this;
-
-		mLogger = this;
 
 		debug();
 		// Start the network and polling thread

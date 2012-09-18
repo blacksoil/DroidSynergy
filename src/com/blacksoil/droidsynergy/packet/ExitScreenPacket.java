@@ -4,10 +4,12 @@ import java.util.List;
 
 import com.blacksoil.droidsynergy.response.Response;
 import com.blacksoil.droidsynergy.response.ScreenInfoResponse;
+import com.blacksoil.droidsynergy.utils.GlobalLogger;
 
 public class ExitScreenPacket extends ResponselessPacket {
 	private static final String mType = "COUT";
 	private static final String mDescription = "Exit screen";
+	private static final boolean DEBUG = true;
 	
 	public ExitScreenPacket(){
 		// Do nothing
@@ -25,6 +27,7 @@ public class ExitScreenPacket extends ResponselessPacket {
 
 	@Override
 	public Response generateResponse() {
+		if (DEBUG) GlobalLogger.getInstance().getLogger().Logd("Exit Screen");
 		return new ScreenInfoResponse();
 	}
 

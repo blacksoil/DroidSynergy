@@ -2,6 +2,8 @@ package com.blacksoil.droidsynergy.packet;
 
 import java.util.List;
 
+import com.blacksoil.droidsynergy.utils.GlobalLogger;
+
 /*
  * This is called when the mouse just entered
  * the target's screen.
@@ -11,7 +13,8 @@ import java.util.List;
 public class EnterScreenPacket extends ResponselessPacket {
 	private final static String mType = "CINN";
 	private final static String mDescription = "Mouse enter the target screen.";
-
+	private final static boolean DEBUG = true;
+	
 	@Override
 	public String getType() {
 		return mType;
@@ -24,6 +27,7 @@ public class EnterScreenPacket extends ResponselessPacket {
 
 	@Override
 	public Packet getInstance(List<Byte> packets) {
+		if (DEBUG) GlobalLogger.getInstance().getLogger().Logd("Enter Screen");
 		return new EnterScreenPacket();
 	}
 

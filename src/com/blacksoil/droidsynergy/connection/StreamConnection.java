@@ -9,19 +9,19 @@ import java.util.List;
 import java.util.Queue;
 
 import com.blacksoil.droidsynergy.packet.Packet;
-import com.blacksoil.droidsynergy.parser.Parser;
+import com.blacksoil.droidsynergy.parser.ParserInterface;
 import com.blacksoil.droidsynergy.response.Response;
 import com.blacksoil.droidsynergy.utils.Converter;
 import com.blacksoil.droidsynergy.utils.Utility;
 
-public class StreamConnection implements Connection {
+public class StreamConnection implements ConnectionInterface {
 	// Input output streams
 	private DataOutputStream mOut;
 	private DataInputStream mIn;
 	// Socket connection
 	private Socket mSocket;
 	// Callback for the connection
-	private ConnectionCallback mCallback;
+	private ConnectionCallbackInterface mCallback;
 	// Queue that holds the parsed packet
 	private Queue<Packet> mPacketQueue;
 	// Timeout between each read() call in ms
@@ -29,7 +29,7 @@ public class StreamConnection implements Connection {
 	// The global buffer to hold the packet byte
 	private List<Byte> mByteBuffer;
 	// Parser that is being used
-	private Parser mParser;
+	private ParserInterface mParser;
 	// Indicates whether the socket is connected or not
 	private boolean mConnected = false;
 	// A single read() buffer size
@@ -44,7 +44,7 @@ public class StreamConnection implements Connection {
 	 * Parser class
 	 */
 	public StreamConnection(String host, int port, Queue<Packet> queue,
-			ConnectionCallback callback, Parser parser) {
+			ConnectionCallbackInterface callback, ParserInterface parser) {
 		
 		// Delay for the main loop
 		mTimeout = 50;
@@ -168,7 +168,7 @@ public class StreamConnection implements Connection {
 				// Having a packet with length > 512 doesn't quite make sense?
 				// Something goes wrong?
 				if (packlen > BUFFER_SIZE) {
-					mCallback.error("read() returns > 512 : " + packlen);
+					mCallback.error("parsed packet length > BUFFER_SIZE : " + packlen);
 				}
 				
 				// We don't have enough data to be processed

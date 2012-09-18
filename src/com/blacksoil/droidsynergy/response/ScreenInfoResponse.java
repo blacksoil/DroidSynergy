@@ -1,6 +1,6 @@
 package com.blacksoil.droidsynergy.response;
 
-import com.blacksoil.droidsynergy.constant.DroidSynergyBuild;
+import com.blacksoil.droidsynergy.global.DroidSynergyShared;
 
 /* Response corresponds to ScreenInfoPacket
  * The reply:
@@ -21,8 +21,8 @@ public class ScreenInfoResponse extends BasicResponse {
 	public ScreenInfoResponse(){
 		mScreenX = 0;
 		mScreenY = 0;
-		mClientHeight = DroidSynergyBuild.getInstance().getScreenHeight();
-		mClientWidth = DroidSynergyBuild.getInstance().getScreenWidth();
+		mClientHeight = DroidSynergyShared.getInstance().getScreenHeight();
+		mClientWidth = DroidSynergyShared.getInstance().getScreenWidth();
 		mWarp = 0;
 		mMx = 0;
 		mMy = 0;

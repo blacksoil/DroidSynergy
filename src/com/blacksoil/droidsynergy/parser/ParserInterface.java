@@ -15,7 +15,7 @@ import com.blacksoil.droidsynergy.packet.Packet;
  * (eg. preffixed by the packet length, and the size of
  * the body is exactly as what the length claims)
  */
-public interface Parser {
+public interface ParserInterface {
 	// Given the array of packet byte
 	// Parse the packet
 	// Throw IllegalArgumentException if packets un-parseable

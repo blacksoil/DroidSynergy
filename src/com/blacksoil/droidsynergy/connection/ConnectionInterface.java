@@ -9,7 +9,7 @@ import com.blacksoil.droidsynergy.response.Response;
  * Interface that the main connection class
  * would have to implement.
  */
-public interface Connection {
+public interface ConnectionInterface {
 	// Return the next packet on the queue
 	public Packet getNextPacket();
 	// Get the queue object that holds the packet

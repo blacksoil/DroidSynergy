@@ -8,7 +8,7 @@ import com.blacksoil.droidsynergy.utils.Converter;
 import com.blacksoil.droidsynergy.utils.Utility;
 
 // Simple implementation of Parser
-public class SimpleParser implements Parser {
+public class SimpleParser implements ParserInterface {
 	// Map that relates the actual string code to a packet
 	private Map<String, Packet> mStringToPacketMap;
 

@@ -1,6 +1,6 @@
 package com.blacksoil.droidsynergy.response;
 
-import com.blacksoil.droidsynergy.constant.DroidSynergyBuild;
+import com.blacksoil.droidsynergy.global.DroidSynergyShared;
 
 /*
  * This is the response of HandshakePacket
@@ -9,8 +9,8 @@ import com.blacksoil.droidsynergy.constant.DroidSynergyBuild;
 public class HandshakeResponse extends BasicResponse {
 	public HandshakeResponse(String client_name){
 		this(client_name, 
-				DroidSynergyBuild.SYNERGY_MAJOR_PROTOCOL,
-				DroidSynergyBuild.SYNERGY_MINOR_PROTOCOL);
+				DroidSynergyShared.SYNERGY_MAJOR_PROTOCOL,
+				DroidSynergyShared.SYNERGY_MINOR_PROTOCOL);
 	}
 	
 	public HandshakeResponse(String client_name,
