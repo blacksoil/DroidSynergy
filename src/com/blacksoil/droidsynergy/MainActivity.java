@@ -32,8 +32,8 @@ import com.blacksoil.droidsynergy.parser.SimpleParser;
 import com.blacksoil.droidsynergy.response.Response;
 import com.blacksoil.droidsynergy.utils.GlobalLogger;
 
-public class MainActivity extends Activity implements ConnectionCallbackInterface,
-		Logger {
+public class MainActivity extends Activity implements
+		ConnectionCallbackInterface, Logger {
 	private String mHost = "192.168.1.142";
 	private int mPort = 24800;
 
@@ -61,21 +61,24 @@ public class MainActivity extends Activity implements ConnectionCallbackInterfac
 	// Logging TAG
 	private static String TAG = "DroidSynergy";
 
-	// Sleep time for each loop in LooperThread in ms
-	private static int LOOPER_DELAY = 50;
-	
+	// Sleep time for each poll in
+	// the packet poller thread
+	private static int LOOPER_DELAY = 20;
+
 	private static boolean DEBUG = false;
 
 	// Associated Runnable for the Thread above
 	private Runnable mNetworkRunnable = new Runnable() {
 		public void run() {
-			mConnection = new StreamConnection(mHost, mPort, mQueue,
-					 			mCallback, mParser);
+			mConnection = new StreamConnection(mHost, mPort, mQueue, mCallback,
+					mParser);
 			// Begin listening
 			mConnection.beginConnection();
 		}
 	};
 
+	// Packet poller thread
+	// Poll packet from the packet queue every specified time
 	private Runnable mLooperRunnable = new Runnable() {
 		public void run() {
 			// The next packet to be processed
@@ -83,28 +86,31 @@ public class MainActivity extends Activity implements ConnectionCallbackInterfac
 			// Response to be sent to server
 			Response response;
 			while (mConnection.isConnected()) {
-				// Grab the next packet from the queue
-				if (!mQueue.isEmpty()) {
-					if(DEBUG) Logd("Queue size: " + mConnection.getQueueSize());
+				// Wait until the queue is not empty
+				synchronized (mQueue) {
+					if (mQueue.isEmpty()) {
+						try {
+							mQueue.wait();
+						} catch (InterruptedException e) {
+							Logd("mQueue.wait() interrupted!");
+							e.printStackTrace();
+						}
+					}
+					if (DEBUG) Logd("Queue size: " + mConnection.getQueueSize());
 					rcvPacket = mQueue.remove();
-					// Log the packet textual description
-					if(DEBUG) Logd("Received: " + rcvPacket.getDescription() + "\n");
-
-					response = rcvPacket.generateResponse();
-					// Logd(Utility.dump(response));
-
-					// Send the response over the network
-					mConnection.writeResponse(response);
 				}
 
-				try {
-					Thread.sleep(LOOPER_DELAY);
-				} catch (InterruptedException e) {
-					Logd("Sleep fail on mLooperThread!");
-					e.printStackTrace();
-				}
+				// Log the packet textual description
+				if (DEBUG) Logd("Received: " + rcvPacket.getDescription() + "\n");
+
+				response = rcvPacket.generateResponse();
+				// Logd(Utility.dump(response));
+
+				// Send the response over the network
+				mConnection.writeResponse(response);
 			}
-			log("Looper Thread quits");
+			
+			Logd("Looper Thread quits");
 		}
 	};
 
@@ -129,18 +135,19 @@ public class MainActivity extends Activity implements ConnectionCallbackInterfac
 		mCallback = this;
 
 		debug();
-		// Start the network and polling thread
+
+		// Start the network and packet polling thread
 		startThreads();
 	}
-	
+
 	// Starts the network and polling thread
-	private void startThreads(){
+	private void startThreads() {
 		// Start the connection thread
 		mNetworkThread = new Thread(mNetworkRunnable);
 		mNetworkThread.start();
 
-		// Don't run the looper until connection is made
-		// Will be started when isConnected() callback is called
+		// Don't start the packet poller thread until the connection is made
+		// PS: Will be started when isConnected() callback is called
 		mLooperThread = new Thread(mLooperRunnable);
 	}
 
@@ -157,11 +164,11 @@ public class MainActivity extends Activity implements ConnectionCallbackInterfac
 		Packet clipboard = new ClipboardPacket();
 		Packet mouseMove = new MouseMovePacket();
 		Packet relMove = new RelativeMovePacket();
-		
-		
+
 		mStringToPacketMap.put(handShake.getType(), handShake);
 		mStringToPacketMap.put(screenInfo.getType(), screenInfo);
-		mStringToPacketMap.put(infoAcknowledgment.getType(), infoAcknowledgment);
+		mStringToPacketMap
+				.put(infoAcknowledgment.getType(), infoAcknowledgment);
 		mStringToPacketMap.put(resetOption.getType(), resetOption);
 		mStringToPacketMap.put(setOption.getType(), setOption);
 		mStringToPacketMap.put(keepAlive.getType(), keepAlive);
@@ -193,7 +200,7 @@ public class MainActivity extends Activity implements ConnectionCallbackInterfac
 			e.printStackTrace();
 		}
 		// Reconnect
-		 startThreads();
+		startThreads();
 		System.exit(1);
 	}
 

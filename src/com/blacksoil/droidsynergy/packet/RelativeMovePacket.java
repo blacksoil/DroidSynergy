@@ -15,8 +15,8 @@ import com.blacksoil.droidsynergy.utils.GlobalLogger;
 public class RelativeMovePacket extends Packet {
 	private final static String mType = "DMRM";
 	private final static String mDescription = "Mouse move rel";
-	private final static boolean DEBUG = true;
-	
+	private final static boolean DEBUG = false;
+
 	// Dummy constructor
 	public RelativeMovePacket() {
 	}
@@ -50,7 +50,8 @@ public class RelativeMovePacket extends Packet {
 		// GlobalLogger.getInstance().getLogger().Logd(Utility.dump(packets));
 		int x = Converter.intFrom16bit(packets.get(0), packets.get(1));
 		int y = Converter.intFrom16bit(packets.get(2), packets.get(3));
-		if (DEBUG) GlobalLogger.getInstance().getLogger().Logd("X:" + x + " Y:" + y);
+		if (DEBUG)
+			GlobalLogger.getInstance().getLogger().Logd("X:" + x + " Y:" + y);
 		DroidSynergyShared.getInstance().getInput().relativeMouseMove(x, y);
 		return new RelativeMovePacket(x, y);
 	}
