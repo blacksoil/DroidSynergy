@@ -8,4 +8,10 @@ public interface InputInterface {
 	void leftMouseDown();
 	//
 	void leftMouseUp();
+	//
+	void rightMouseDown();
+	//
+	void rightMouseUp();
+	
+	
 }

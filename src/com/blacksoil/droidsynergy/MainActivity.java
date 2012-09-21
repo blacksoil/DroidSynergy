@@ -21,7 +21,9 @@ import com.blacksoil.droidsynergy.packet.ExitScreenPacket;
 import com.blacksoil.droidsynergy.packet.HandshakePacket;
 import com.blacksoil.droidsynergy.packet.InfoAcknowledgmentPacket;
 import com.blacksoil.droidsynergy.packet.KeepAlivePacket;
+import com.blacksoil.droidsynergy.packet.MouseDownPacket;
 import com.blacksoil.droidsynergy.packet.MouseMovePacket;
+import com.blacksoil.droidsynergy.packet.MouseUpPacket;
 import com.blacksoil.droidsynergy.packet.Packet;
 import com.blacksoil.droidsynergy.packet.RelativeMovePacket;
 import com.blacksoil.droidsynergy.packet.ResetOptionPacket;
@@ -60,10 +62,6 @@ public class MainActivity extends Activity implements
 
 	// Logging TAG
 	private static String TAG = "DroidSynergy";
-
-	// Sleep time for each poll in
-	// the packet poller thread
-	private static int LOOPER_DELAY = 20;
 
 	private static boolean DEBUG = false;
 
@@ -164,6 +162,8 @@ public class MainActivity extends Activity implements
 		Packet clipboard = new ClipboardPacket();
 		Packet mouseMove = new MouseMovePacket();
 		Packet relMove = new RelativeMovePacket();
+		Packet mouseDown = new MouseDownPacket();
+		Packet mouseUp = new MouseUpPacket();
 
 		mStringToPacketMap.put(handShake.getType(), handShake);
 		mStringToPacketMap.put(screenInfo.getType(), screenInfo);
@@ -177,6 +177,9 @@ public class MainActivity extends Activity implements
 		mStringToPacketMap.put(mouseMove.getType(), mouseMove);
 		mStringToPacketMap.put(exitScreen.getType(), exitScreen);
 		mStringToPacketMap.put(relMove.getType(), relMove);
+		mStringToPacketMap.put(mouseDown.getType(), mouseDown);
+		mStringToPacketMap.put(mouseUp.getType(), mouseUp);
+		
 	}
 
 	@Override

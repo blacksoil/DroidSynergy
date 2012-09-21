@@ -8,9 +8,19 @@ import com.blacksoil.droidsynergy.utils.GlobalLogger;
 // Bridge the JNI that does the actual input messaging
 // This class is meant to be initialized only once
 public class SimpleInput implements InputInterface{
-	private static native int initializeNative();
-	private static native void relativeMouseMoveNative(int dx, int dy);
+	
+	
 	private final static String UINPUT_PATH = "/dev/uinput";
+	
+	private static native int initializeNative();
+	// Relative mouse movement
+	private static native void relativeMouseMoveNative(int dx, int dy);
+	// Mouse click
+	private static native void leftMouseDownNative();
+	private static native void leftMouseUpNative();
+	private static native void rightMouseDownNative();
+	private static native void rightMouseUpNative();
+	
 	
 	static {
 		System.loadLibrary("input_injector_jni");
@@ -32,9 +42,12 @@ public class SimpleInput implements InputInterface{
 	}
 	
 	public SimpleInput(){
+		// Appropriate permission is needed for injection
 		setUinputPermission();
+		// Initializes the JNI library
 		int code = initializeNative();
-		GlobalLogger.getInstance().getLogger().Logd("Initializenative:" + code);
+		GlobalLogger.getInstance().getLogger().Logd("Initialize native:" + code);
+		// TODO: Be able to obtain error message from the JNI layer
 	}
 	
 	
@@ -46,17 +59,23 @@ public class SimpleInput implements InputInterface{
 			dy /= 2;
 		*/
 		relativeMouseMoveNative(dx,dy);
-		
 	}
 
-	public void leftMouseDown() {
-		// TODO Auto-generated method stub
-		
+	public void leftMouseDown(){
+		leftMouseDownNative();
 	}
+		
 
 	public void leftMouseUp() {
-		// TODO Auto-generated method stub
+		leftMouseUpNative();
 		
+	}
+	public void rightMouseDown() {
+		rightMouseDownNative();
+		
+	}
+	public void rightMouseUp() {
+		rightMouseUpNative();		
 	}
 
 }

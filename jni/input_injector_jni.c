@@ -17,3 +17,17 @@ Java_com_blacksoil_droidsynergy_input_SimpleInput_relativeMouseMoveNative
 	MouseXSyn(dx);
 	MouseYSyn(dy);
 }
+
+
+void
+Java_com_blacksoil_droidsynergy_input_SimpleInput_leftMouseDownNative
+(JNIEnv *env, jobject this){
+	MouseLeftDown();
+}
+
+void
+Java_com_blacksoil_droidsynergy_input_SimpleInput_leftMouseUpNative
+(JNIEnv *env, jobject this){
+	MouseLeftUp();
+}
+

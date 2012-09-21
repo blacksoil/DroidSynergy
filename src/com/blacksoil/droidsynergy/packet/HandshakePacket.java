@@ -31,9 +31,6 @@ public class HandshakePacket extends Packet {
 	private final static String mType = "Synergy";
 	private final static String mDescription = "Synergy Handshake";
 
-	public class Argument {
-		public String client_name;
-	}
 
 	@Override
 	public String getType() {

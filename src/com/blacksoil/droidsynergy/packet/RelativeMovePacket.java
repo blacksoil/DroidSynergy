@@ -3,8 +3,6 @@ package com.blacksoil.droidsynergy.packet;
 import java.util.List;
 
 import com.blacksoil.droidsynergy.global.DroidSynergyShared;
-import com.blacksoil.droidsynergy.response.NoOpResponse;
-import com.blacksoil.droidsynergy.response.Response;
 import com.blacksoil.droidsynergy.utils.Converter;
 import com.blacksoil.droidsynergy.utils.GlobalLogger;
 
@@ -12,7 +10,7 @@ import com.blacksoil.droidsynergy.utils.GlobalLogger;
  * Packet that request mouse movement
  * Relative movement
  */
-public class RelativeMovePacket extends Packet {
+public class RelativeMovePacket extends ResponselessPacket {
 	private final static String mType = "DMRM";
 	private final static String mDescription = "Mouse move rel";
 	private final static boolean DEBUG = false;
@@ -35,11 +33,6 @@ public class RelativeMovePacket extends Packet {
 		return mDescription;
 	}
 
-	@Override
-	public Response generateResponse() {
-		return new NoOpResponse();
-	}
-
 	// Up to this point the packet's size has already been stripped
 	@Override
 	public Packet getInstance(List<Byte> packets) {
@@ -47,6 +40,7 @@ public class RelativeMovePacket extends Packet {
 			throw new RuntimeException("Inappropriate network packet size "
 					+ "for MouseMovePacket");
 		}
+		
 		// GlobalLogger.getInstance().getLogger().Logd(Utility.dump(packets));
 		int x = Converter.intFrom16bit(packets.get(0), packets.get(1));
 		int y = Converter.intFrom16bit(packets.get(2), packets.get(3));
