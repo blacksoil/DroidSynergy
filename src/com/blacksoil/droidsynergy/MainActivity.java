@@ -24,6 +24,7 @@ import com.blacksoil.droidsynergy.packet.KeepAlivePacket;
 import com.blacksoil.droidsynergy.packet.MouseDownPacket;
 import com.blacksoil.droidsynergy.packet.MouseMovePacket;
 import com.blacksoil.droidsynergy.packet.MouseUpPacket;
+import com.blacksoil.droidsynergy.packet.MouseWheelPacket;
 import com.blacksoil.droidsynergy.packet.Packet;
 import com.blacksoil.droidsynergy.packet.RelativeMovePacket;
 import com.blacksoil.droidsynergy.packet.ResetOptionPacket;
@@ -164,6 +165,7 @@ public class MainActivity extends Activity implements
 		Packet relMove = new RelativeMovePacket();
 		Packet mouseDown = new MouseDownPacket();
 		Packet mouseUp = new MouseUpPacket();
+		Packet mouseWheel = new MouseWheelPacket();
 
 		mStringToPacketMap.put(handShake.getType(), handShake);
 		mStringToPacketMap.put(screenInfo.getType(), screenInfo);
@@ -179,7 +181,7 @@ public class MainActivity extends Activity implements
 		mStringToPacketMap.put(relMove.getType(), relMove);
 		mStringToPacketMap.put(mouseDown.getType(), mouseDown);
 		mStringToPacketMap.put(mouseUp.getType(), mouseUp);
-		
+		mStringToPacketMap.put(mouseWheel.getType(), mouseWheel);
 	}
 
 	@Override

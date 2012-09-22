@@ -12,6 +12,7 @@ public interface InputInterface {
 	void rightMouseDown();
 	//
 	void rightMouseUp();
-	
+	//
+	void mouseWheel(int x,int y);
 	
 }

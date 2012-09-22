@@ -51,6 +51,7 @@ public class MouseMovePacket extends Packet{
 		int y = Converter.intFrom16bit(packets.get(2), packets.get(3));
 		if (DEBUG) GlobalLogger.getInstance().getLogger().Logd("X:" + x + " Y:" + y);
 		return new MouseMovePacket(x,y);
+		
 	}
 
 	@Override

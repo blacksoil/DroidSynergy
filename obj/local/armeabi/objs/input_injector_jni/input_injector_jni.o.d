@@ -1,7 +1,7 @@
-/Users/antoniusdennyharijanto/Desktop/DroidSynergy/obj/local/armeabi/objs/input_injector_jni/input_injector_jni.o: \
- /Users/antoniusdennyharijanto/Desktop/DroidSynergy/jni/input_injector_jni.c \
+obj/local/armeabi/objs/input_injector_jni/input_injector_jni.o: \
+ jni/input_injector_jni.c \
  /Users/antoniusdennyharijanto/android-ndk-r8b/platforms/android-14/arch-arm/usr/include/jni.h \
- /Users/antoniusdennyharijanto/Desktop/DroidSynergy/jni/basic_input.c \
+ jni/basic_input.c \
  /Users/antoniusdennyharijanto/android-ndk-r8b/platforms/android-14/arch-arm/usr/include/stdio.h \
  /Users/antoniusdennyharijanto/android-ndk-r8b/platforms/android-14/arch-arm/usr/include/sys/cdefs.h \
  /Users/antoniusdennyharijanto/android-ndk-r8b/platforms/android-14/arch-arm/usr/include/sys/cdefs_elf.h \
@@ -59,12 +59,12 @@
  /Users/antoniusdennyharijanto/android-ndk-r8b/platforms/android-14/arch-arm/usr/include/asm/errno.h \
  /Users/antoniusdennyharijanto/android-ndk-r8b/platforms/android-14/arch-arm/usr/include/asm-generic/errno.h \
  /Users/antoniusdennyharijanto/android-ndk-r8b/platforms/android-14/arch-arm/usr/include/asm-generic/errno-base.h \
- /Users/antoniusdennyharijanto/Desktop/DroidSynergy/jni/uinput.h \
+ jni/uinput.h \
  /Users/antoniusdennyharijanto/android-ndk-r8b/platforms/android-14/arch-arm/usr/include/android/log.h
 
 /Users/antoniusdennyharijanto/android-ndk-r8b/platforms/android-14/arch-arm/usr/include/jni.h:
 
-/Users/antoniusdennyharijanto/Desktop/DroidSynergy/jni/basic_input.c:
+jni/basic_input.c:
 
 /Users/antoniusdennyharijanto/android-ndk-r8b/platforms/android-14/arch-arm/usr/include/stdio.h:
 
@@ -180,6 +180,6 @@
 
 /Users/antoniusdennyharijanto/android-ndk-r8b/platforms/android-14/arch-arm/usr/include/asm-generic/errno-base.h:
 
-/Users/antoniusdennyharijanto/Desktop/DroidSynergy/jni/uinput.h:
+jni/uinput.h:
 
 /Users/antoniusdennyharijanto/android-ndk-r8b/platforms/android-14/arch-arm/usr/include/android/log.h:

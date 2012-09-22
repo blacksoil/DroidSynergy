@@ -57,9 +57,13 @@ int InitUinput() {
 		Err(strerror(errno));
 	}
 
-	if (ioctl(_fd, UI_SET_EVBIT, EV_REL) == -1 ||
+	if (
+	ioctl(_fd, UI_SET_EVBIT, EV_REL) == -1 ||
+	ioctl(_fd, UI_SET_EVBIT, EV_ABS) == -1 ||
 	ioctl(_fd, UI_SET_RELBIT, REL_X) == -1 ||
 	ioctl(_fd, UI_SET_RELBIT, REL_Y) == -1 ||
+	ioctl(_fd, UI_SET_RELBIT, REL_WHEEL) == -1 ||
+	ioctl(_fd, UI_SET_ABSBIT, ABS_WHEEL) == -1 ||
 	ioctl(_fd, UI_SET_EVBIT, EV_SYN) == -1 ||
 	ioctl(_fd, UI_SET_EVBIT, EV_KEY) == -1 ||
 	ioctl(_fd, UI_SET_KEYBIT, BTN_MOUSE) == -1) {
@@ -160,6 +164,20 @@ int MouseRightDown() {
 
 int MouseRightUp() {
 	return WriteToInputSyn(EV_KEY, BTN_RIGHT, UP);
+}
+
+int MouseWheel(int x, int y){
+	/*
+	if(x > 0)
+		x = 1;
+	else
+		x = -1;
+
+	return WriteToInputSyn(EV_REL, REL_WHEEL, x);
+	*/
+
+	return WriteToInputSyn(EV_ABS, ABS_WHEEL, x) &&
+			WriteToInputSyn(EV_ABS, ABS_WHEEL, y);
 }
 
 void Test() {

@@ -20,7 +20,6 @@ public class RelativeMovePacket extends ResponselessPacket {
 	}
 
 	public RelativeMovePacket(int x, int y) {
-
 	}
 
 	@Override
@@ -48,6 +47,7 @@ public class RelativeMovePacket extends ResponselessPacket {
 			GlobalLogger.getInstance().getLogger().Logd("X:" + x + " Y:" + y);
 		DroidSynergyShared.getInstance().getInput().relativeMouseMove(x, y);
 		return new RelativeMovePacket(x, y);
+		
 	}
 
 	@Override
