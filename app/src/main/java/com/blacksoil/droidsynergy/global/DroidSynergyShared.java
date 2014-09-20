@@ -5,6 +5,7 @@ import android.graphics.Point;
 import android.view.WindowManager;
 
 import com.blacksoil.droidsynergy.input.InputInterface;
+import com.blacksoil.droidsynergy.utils.GlobalLogger;
 
 /*
  * This is a class
@@ -23,6 +24,8 @@ public class DroidSynergyShared {
 	private WindowManager mWindowManager;
 	// Input bridge
 	private InputInterface mInput;
+
+    private final static boolean DEBUG = true;
 	
 	public DroidSynergyShared(String clientName, Context ctx, InputInterface input){
 		if(clientName == null)
@@ -71,6 +74,12 @@ public class DroidSynergyShared {
 	public InputInterface getInput(){
 		return mInput;
 	}
+
+    public void LogD(String msg) {
+        if (DEBUG) {
+            GlobalLogger.getInstance().getLogger().Logd(msg);
+        }
+    }
 	
 	// These constants are required to respond to HandshakeProtocol
 	public static final int SYNERGY_MAJOR_PROTOCOL = 1;

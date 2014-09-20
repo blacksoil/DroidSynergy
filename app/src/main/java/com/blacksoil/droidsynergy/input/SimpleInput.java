@@ -20,7 +20,8 @@ public class SimpleInput implements InputInterface{
 	private static native void leftMouseUpNative();
 	private static native void rightMouseDownNative();
 	private static native void rightMouseUpNative();
-	private static native void mouseWheelNative(int x,int y);
+    private static native void mouseWheelNative(int x,int y);
+    private static native void mouseAbsNative(int x,int y);
 	
 	static {
 		System.loadLibrary("input_injector_jni");
@@ -75,6 +76,10 @@ public class SimpleInput implements InputInterface{
 		rightMouseDownNative();
 		
 	}
+
+    public void mouseAbs(int x, int y) {
+        mouseAbsNative(x, y);
+    }
 	
 	public void rightMouseUp() {
 		rightMouseUpNative();		

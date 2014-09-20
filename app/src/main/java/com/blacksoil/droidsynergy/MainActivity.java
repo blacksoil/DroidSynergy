@@ -37,7 +37,7 @@ import com.blacksoil.droidsynergy.utils.GlobalLogger;
 
 public class MainActivity extends Activity implements
 		ConnectionCallbackInterface, Logger {
-	private String mHost = "192.168.5.134";
+	private String mHost = "172.17.185.236";
 	private int mPort = 24800;
 
 	// Thread that handles network connections

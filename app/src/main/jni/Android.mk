@@ -22,3 +22,8 @@ LOCAL_SRC_FILES := input_injector_jni.c
 LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog 
 
 include $(BUILD_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := input_injector_tester
+LOCAL_SRC_FILES := input_injector_tester.c
+include $(BUILD_EXECUTABLE)

@@ -36,3 +36,9 @@ Java_com_blacksoil_droidsynergy_input_SimpleInput_mouseWheelNative
 (JNIEnv *env, jobject this, jint x, jint y){
 	MouseWheel(x, y);
 }
+
+void
+Java_com_blacksoil_droidsynergy_input_SimpleInput_mouseAbsNative
+(JNIEnv *env, jobject this, jint x, jint y){
+	MouseAbs(x, y);
+}

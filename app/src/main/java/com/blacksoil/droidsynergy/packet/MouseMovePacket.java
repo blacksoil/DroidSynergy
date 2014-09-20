@@ -2,6 +2,7 @@ package com.blacksoil.droidsynergy.packet;
 
 import java.util.List;
 
+import com.blacksoil.droidsynergy.global.DroidSynergyShared;
 import com.blacksoil.droidsynergy.response.NoOpResponse;
 import com.blacksoil.droidsynergy.response.Response;
 import com.blacksoil.droidsynergy.utils.Converter;
@@ -50,6 +51,7 @@ public class MouseMovePacket extends Packet{
 		int x = Converter.intFrom16bit(packets.get(0), packets.get(1));
 		int y = Converter.intFrom16bit(packets.get(2), packets.get(3));
 		if (DEBUG) GlobalLogger.getInstance().getLogger().Logd("X:" + x + " Y:" + y);
+        DroidSynergyShared.getInstance().getInput().mouseAbs(x, y);
 		return new MouseMovePacket(x,y);
 		
 	}

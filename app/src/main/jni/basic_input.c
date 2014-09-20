@@ -76,6 +76,8 @@ int InitUinput() {
 
 	// Write the device name
 	memset(&dev, 0, sizeof(dev));
+        dev.absmin[ABS_X] = 0;
+        dev.absmax[ABS_X] = 1023;
 	strncpy(dev.name, DEV_NAME, strlen(DEV_NAME));
 	WriteToFd((void*) &dev, sizeof(dev));
 
@@ -109,6 +111,25 @@ int WriteToInputSyn(uint16_t type, uint16_t code, int32_t value) {
 	}
 
 	return WriteToInput(EV_SYN, SYN_REPORT, 0);
+}
+
+int MouseAbs(int x, int y) {
+  struct input_event event[2];
+  memset(&event, 0, sizeof(event));
+
+  event[0].type = EV_ABS;
+  event[0].code = ABS_X;
+  event[0].value = x;
+
+  event[1].type = EV_ABS;
+  event[1].code = ABS_Y;
+  event[1].value = y;
+
+  if (!WriteToFd(&event, sizeof(event))) {
+    return 0;
+  }
+
+  return WriteToInput(EV_SYN, SYN_REPORT, 0);
 }
 
 int MouseX(int x) {
