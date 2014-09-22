@@ -1,10 +1,10 @@
-/home/aharijanto/Programming/Android/DroidSynergy/app/src/main/obj/local/armeabi/objs/input_injector_jni/input_injector_jni.o: \
- /home/aharijanto/Programming/Android/DroidSynergy/app/src/main/jni/input_injector_jni.c \
+/home/aharijanto/AndroidstudioProjects/DroidSynergy/app/src/main/obj/local/armeabi/objs/input_injector_jni/input_injector_jni.o: \
+ /home/aharijanto/AndroidstudioProjects/DroidSynergy/app/src/main/jni/input_injector_jni.c \
  /home/aharijanto/Programming/tools/android-ndk-r10b/platforms/android-3/arch-arm/usr/include/jni.h \
  /home/aharijanto/Programming/tools/android-ndk-r10b/platforms/android-3/arch-arm/usr/include/sys/cdefs.h \
  /home/aharijanto/Programming/tools/android-ndk-r10b/platforms/android-3/arch-arm/usr/include/sys/cdefs_elf.h \
  /home/aharijanto/Programming/tools/android-ndk-r10b/platforms/android-3/arch-arm/usr/include/android/api-level.h \
- /home/aharijanto/Programming/Android/DroidSynergy/app/src/main/jni/basic_input.c \
+ /home/aharijanto/AndroidstudioProjects/DroidSynergy/app/src/main/jni/basic_input.c \
  /home/aharijanto/Programming/tools/android-ndk-r10b/platforms/android-3/arch-arm/usr/include/stdio.h \
  /home/aharijanto/Programming/tools/android-ndk-r10b/platforms/android-3/arch-arm/usr/include/sys/types.h \
  /home/aharijanto/Programming/tools/android-ndk-r10b/platforms/android-3/arch-arm/usr/include/stdint.h \
@@ -61,7 +61,7 @@
  /home/aharijanto/Programming/tools/android-ndk-r10b/platforms/android-3/arch-arm/usr/include/asm/errno.h \
  /home/aharijanto/Programming/tools/android-ndk-r10b/platforms/android-3/arch-arm/usr/include/asm-generic/errno.h \
  /home/aharijanto/Programming/tools/android-ndk-r10b/platforms/android-3/arch-arm/usr/include/asm-generic/errno-base.h \
- /home/aharijanto/Programming/Android/DroidSynergy/app/src/main/jni/uinput.h \
+ /home/aharijanto/AndroidstudioProjects/DroidSynergy/app/src/main/jni/uinput.h \
  /home/aharijanto/Programming/tools/android-ndk-r10b/platforms/android-3/arch-arm/usr/include/android/log.h
 
 /home/aharijanto/Programming/tools/android-ndk-r10b/platforms/android-3/arch-arm/usr/include/jni.h:
@@ -72,7 +72,7 @@
 
 /home/aharijanto/Programming/tools/android-ndk-r10b/platforms/android-3/arch-arm/usr/include/android/api-level.h:
 
-/home/aharijanto/Programming/Android/DroidSynergy/app/src/main/jni/basic_input.c:
+/home/aharijanto/AndroidstudioProjects/DroidSynergy/app/src/main/jni/basic_input.c:
 
 /home/aharijanto/Programming/tools/android-ndk-r10b/platforms/android-3/arch-arm/usr/include/stdio.h:
 
@@ -186,6 +186,6 @@
 
 /home/aharijanto/Programming/tools/android-ndk-r10b/platforms/android-3/arch-arm/usr/include/asm-generic/errno-base.h:
 
-/home/aharijanto/Programming/Android/DroidSynergy/app/src/main/jni/uinput.h:
+/home/aharijanto/AndroidstudioProjects/DroidSynergy/app/src/main/jni/uinput.h:
 
 /home/aharijanto/Programming/tools/android-ndk-r10b/platforms/android-3/arch-arm/usr/include/android/log.h:

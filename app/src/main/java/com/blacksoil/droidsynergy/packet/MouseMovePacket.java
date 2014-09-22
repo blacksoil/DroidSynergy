@@ -15,7 +15,7 @@ import com.blacksoil.droidsynergy.utils.GlobalLogger;
 public class MouseMovePacket extends Packet{
 	private final static String mType = "DMMV";
 	private final static String mDescription = "Mouse move";	
-	private final static boolean DEBUG = true;
+	private final static boolean DEBUG = false;
 	
 	// Dummy constructor
 	public MouseMovePacket(){
@@ -51,7 +51,9 @@ public class MouseMovePacket extends Packet{
 		int x = Converter.intFrom16bit(packets.get(0), packets.get(1));
 		int y = Converter.intFrom16bit(packets.get(2), packets.get(3));
 		if (DEBUG) GlobalLogger.getInstance().getLogger().Logd("X:" + x + " Y:" + y);
-        DroidSynergyShared.getInstance().getInput().mouseAbs(x, y);
+
+        // Unfortunately, Android doesn't support ABS mouse event by default
+		// DroidSynergyShared.getInstance().getInput().mouseAbs(x, y);
 		return new MouseMovePacket(x,y);
 		
 	}

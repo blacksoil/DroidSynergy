@@ -18,7 +18,7 @@ public class StreamConnection implements ConnectionInterface {
 	// Input output streams
 	private DataOutputStream mOut;
 	private DataInputStream mIn;
-	// Socket connection
+	// Socket connectionsdsadsadqwdwqdqwd
 	private Socket mSocket;
 	// Callback for the connection
 	private ConnectionCallbackInterface mCallback;
@@ -140,8 +140,10 @@ public class StreamConnection implements ConnectionInterface {
 
 				synchronized (mByteBuffer) {
 					packlen = Converter.getPacketLength(mByteBuffer);
-					if (DEBUG)
-						mCallback.log("Packet length: " + packlen);
+					if (DEBUG) {
+					    mCallback.log("Total mByteBuffer length: " + mByteBuffer.size());
+					    mCallback.log("Packet length: " + packlen);
+					}
 					// The interpreted packet length is invalid
 					if (packlen <= 0) {
 						mCallback.log("Unusual packet length: " + packlen);
@@ -158,9 +160,9 @@ public class StreamConnection implements ConnectionInterface {
 					// Prints out what's inside the buffer
 					// Is it really that big? 
 					synchronized(mByteBuffer){
-						Utility.dump(mByteBuffer);
+					    mCallback.log(Utility.dump(mByteBuffer));
 					}
-					mCallback.error("parsed packet length > BUFFER_SIZE : "
+					mCallback.error("Parsed packet length > BUFFER_SIZE : "
 							+ packlen);
 				}
 

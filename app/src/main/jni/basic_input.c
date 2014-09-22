@@ -69,7 +69,14 @@ int InitUinput() {
 	ioctl(_fd, UI_SET_ABSBIT, ABS_WHEEL) == -1 ||
 	ioctl(_fd, UI_SET_EVBIT, EV_SYN) == -1 ||
 	ioctl(_fd, UI_SET_EVBIT, EV_KEY) == -1 ||
-	ioctl(_fd, UI_SET_KEYBIT, BTN_MOUSE) == -1) {
+//	ioctl(_fd, UI_SET_KEYBIT, BTN_MOUSE) == -1) ||
+//	ioctl(_fd, UI_SET_KEYBIT, BTN_MOUSE) == -1) ||
+//	ioctl(_fd, UI_SET_KEYBIT, BTN_MOUSE) == -1) ||
+//	ioctl(_fd, UI_SET_KEYBIT, BTN_MOUSE) == -1) ||
+	ioctl(_fd, UI_SET_KEYBIT, BTN_MOUSE) == -1)
+
+	{
+
 		Print("IOCTL failed:");
 		return Err(strerror(errno));
 	}
