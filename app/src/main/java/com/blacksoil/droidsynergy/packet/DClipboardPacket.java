@@ -1,13 +1,13 @@
 package com.blacksoil.droidsynergy.packet;
 
-import java.util.List;
-
 import com.blacksoil.droidsynergy.response.NoOpResponse;
 import com.blacksoil.droidsynergy.response.Response;
 
-public class ClipboardPacket extends Packet {
+import java.util.List;
+
+public class DClipboardPacket extends Packet {
 	private final static String mType = "DCLP";
-	private final static String mDescription = "Clipboard data";
+	private final static String mDescription = "DClipboard data";
 	
 	@Override
 	public String getType() {
@@ -26,7 +26,7 @@ public class ClipboardPacket extends Packet {
 
 	@Override
 	public Packet getInstance(List<Byte> packets) {
-		return new ClipboardPacket();
+		return new DClipboardPacket();
 	}
 
 	@Override

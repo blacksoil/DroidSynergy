@@ -15,12 +15,16 @@ import com.blacksoil.droidsynergy.connection.ConnectionInterface;
 import com.blacksoil.droidsynergy.connection.StreamConnection;
 import com.blacksoil.droidsynergy.global.DroidSynergyShared;
 import com.blacksoil.droidsynergy.input.SimpleInput;
-import com.blacksoil.droidsynergy.packet.ClipboardPacket;
+import com.blacksoil.droidsynergy.packet.CClipboardPacket;
+import com.blacksoil.droidsynergy.packet.DClipboardPacket;
+import com.blacksoil.droidsynergy.packet.KeyPressDnPacket;
 import com.blacksoil.droidsynergy.packet.EnterScreenPacket;
 import com.blacksoil.droidsynergy.packet.ExitScreenPacket;
 import com.blacksoil.droidsynergy.packet.HandshakePacket;
 import com.blacksoil.droidsynergy.packet.InfoAcknowledgmentPacket;
 import com.blacksoil.droidsynergy.packet.KeepAlivePacket;
+import com.blacksoil.droidsynergy.packet.KeyPressRpPacket;
+import com.blacksoil.droidsynergy.packet.KeyPressUpPacket;
 import com.blacksoil.droidsynergy.packet.MouseDownPacket;
 import com.blacksoil.droidsynergy.packet.MouseMovePacket;
 import com.blacksoil.droidsynergy.packet.MouseUpPacket;
@@ -37,7 +41,7 @@ import com.blacksoil.droidsynergy.utils.GlobalLogger;
 
 public class MainActivity extends Activity implements
 		ConnectionCallbackInterface, Logger {
-	private String mHost = "192.168.5.134";
+	private String mHost = "172.17.185.236";
 	private int mPort = 24800;
 
 	// Thread that handles network connections
@@ -49,8 +53,8 @@ public class MainActivity extends Activity implements
 	// with the Packet object
 	private Map<String, Packet> mStringToPacketMap = new HashMap<String, Packet>();
 
-	// Network connection handler
-	private ConnectionInterface mConnection;
+    // Network connection handler
+    private ConnectionInterface mConnection;
 
 	// Network byte parser
 	private ParserInterface mParser;
@@ -64,7 +68,7 @@ public class MainActivity extends Activity implements
 	// Logging TAG
 	private static String TAG = "DroidSynergy";
 
-	private static boolean DEBUG = true;
+	private static boolean DEBUG = false;
 
 	// Associated Runnable for the Thread above
 	private Runnable mNetworkRunnable = new Runnable() {
@@ -129,7 +133,7 @@ public class MainActivity extends Activity implements
 
 		mParser = new SimpleParser(mStringToPacketMap);
 
-		mQueue = new LinkedList<Packet>();
+        mQueue = new LinkedList<Packet>();
 
 		mCallback = this;
 
@@ -160,12 +164,16 @@ public class MainActivity extends Activity implements
 		Packet keepAlive = new KeepAlivePacket();
 		Packet enterScreen = new EnterScreenPacket();
 		Packet exitScreen = new ExitScreenPacket();
-		Packet clipboard = new ClipboardPacket();
+		Packet cClipboard = new CClipboardPacket();
+        Packet dClipboard = new DClipboardPacket();
 		Packet mouseMove = new MouseMovePacket();
 		Packet relMove = new RelativeMovePacket();
 		Packet mouseDown = new MouseDownPacket();
 		Packet mouseUp = new MouseUpPacket();
 		Packet mouseWheel = new MouseWheelPacket();
+        Packet keyPressDn = new KeyPressDnPacket();
+        Packet keyPressUp = new KeyPressUpPacket();
+        Packet keyPressRp = new KeyPressRpPacket();
 
 		mStringToPacketMap.put(handShake.getType(), handShake);
 		mStringToPacketMap.put(screenInfo.getType(), screenInfo);
@@ -175,13 +183,17 @@ public class MainActivity extends Activity implements
 		mStringToPacketMap.put(setOption.getType(), setOption);
 		mStringToPacketMap.put(keepAlive.getType(), keepAlive);
 		mStringToPacketMap.put(enterScreen.getType(), enterScreen);
-		mStringToPacketMap.put(clipboard.getType(), clipboard);
+		mStringToPacketMap.put(cClipboard.getType(), cClipboard);
+        mStringToPacketMap.put(dClipboard.getType(), dClipboard);
 		mStringToPacketMap.put(mouseMove.getType(), mouseMove);
 		mStringToPacketMap.put(exitScreen.getType(), exitScreen);
 		mStringToPacketMap.put(relMove.getType(), relMove);
 		mStringToPacketMap.put(mouseDown.getType(), mouseDown);
 		mStringToPacketMap.put(mouseUp.getType(), mouseUp);
 		mStringToPacketMap.put(mouseWheel.getType(), mouseWheel);
+        mStringToPacketMap.put(keyPressDn.getType(), keyPressDn);
+        mStringToPacketMap.put(keyPressUp.getType(), keyPressUp);
+        mStringToPacketMap.put(keyPressRp.getType(), keyPressRp);
 	}
 
 	@Override
