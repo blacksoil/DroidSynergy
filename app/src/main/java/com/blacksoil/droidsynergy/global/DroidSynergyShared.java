@@ -20,14 +20,14 @@ public class DroidSynergyShared {
 	private String mClientName;
 	// Main activity's context
 	private Context mContext; 
-	// Window Manager
-	private WindowManager mWindowManager;
 	// Input bridge
 	private InputInterface mInput;
 
+    private Point mScreenSize;
+
     private final static boolean DEBUG = true;
 	
-	public DroidSynergyShared(String clientName, Context ctx, InputInterface input){
+	public DroidSynergyShared(String clientName, Context ctx, InputInterface input, Point screenSize){
 		if(clientName == null)
 			throw new IllegalArgumentException("clientName can't be null!");
 		if(input == null)
@@ -35,10 +35,8 @@ public class DroidSynergyShared {
 		
 		mClientName = clientName;
 		mContext = ctx;
-		mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
-		if(mWindowManager == null)
-			throw new RuntimeException("Couldn't get WindowManager!");
 		mInput = input;
+        mScreenSize = screenSize;
 	}
 	
 	public static DroidSynergyShared getInstance(){
@@ -48,10 +46,10 @@ public class DroidSynergyShared {
 	}
 	
 	// Called only once to initialized this class data
-	public static void initialize(String clientName, Context ctx, InputInterface input){
+	public static void initialize(String clientName, Context ctx, InputInterface input, Point screenSize){
 		if(mInstance != null)
 			throw new RuntimeException("initialize() could only be called once!");
-		mInstance = new DroidSynergyShared(clientName, ctx, input);
+		mInstance = new DroidSynergyShared(clientName, ctx, input, screenSize);
 	}
 	
 	public String getClientName(){
@@ -59,15 +57,11 @@ public class DroidSynergyShared {
 	}
 	
 	public int getScreenWidth(){
-		Point size = new Point();
-		mWindowManager.getDefaultDisplay().getSize(size);
-		return size.x;
+        return mScreenSize.x;
 	}
 	
 	public int getScreenHeight(){
-		Point size = new Point();
-		mWindowManager.getDefaultDisplay().getSize(size);
-		return size.y;
+        return mScreenSize.y;
 	}
 	
 	// Returns the input handler

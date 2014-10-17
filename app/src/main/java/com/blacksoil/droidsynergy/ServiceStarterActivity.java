@@ -1,13 +1,17 @@
 package com.blacksoil.droidsynergy;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
+import android.hardware.Camera;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -18,10 +22,17 @@ public class ServiceStarterActivity extends Activity implements View.OnClickList
 
     private Button mButtonConnect;
     private EditText mTextIp;
+
+    private Point mScreenSize;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_service_starter);
+
+        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        mScreenSize = new Point();
+        wm.getDefaultDisplay().getSize(mScreenSize);
         initWidget();
     }
 
@@ -58,6 +69,9 @@ public class ServiceStarterActivity extends Activity implements View.OnClickList
             Intent i = new Intent(this, MainService.class);
             i.putExtra("IP_ADDRESS", mTextIp.getText().toString());
             i.putExtra("PORT", DEFAULT_PORT);
+            i.putExtra("SCREEN_WIDTH", mScreenSize.x);
+            i.putExtra("SCREEN_HEIGHT", mScreenSize.y);
+
             startService(i);
         }
     }
